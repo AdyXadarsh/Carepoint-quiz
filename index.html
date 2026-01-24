@@ -158,8 +158,8 @@
 
 <div class="container">
     <div id="start-screen">
-        <h1>Carepoint Quiz Pro</h1>
-        <p>Master the Prices & Clinical Significance</p>
+        <h1>Carepoint Quiz</h1>
+        <p>Corporate care at affordable Rates</p>
         
         <div style="text-align: left; margin-bottom: 5px;"><strong>Select Category:</strong></div>
         <select id="category-filter" class="filter-select">
@@ -232,7 +232,7 @@
         // ECG
         { cat: "ECG", test: "Electrocardiography", price: 500, reason: "Records heart rhythm; used for chest pain, palpitations, or routine heart check." },
 
-        // Pathology (Completed Reasons)
+        // Pathology ( Reasons)
         { cat: "Pathology", test: "APTT", price: 600, reason: "Clotting test; monitors patients on Heparin or with bleeding disorders." },
         { cat: "Pathology", test: "AMH", price: 2200, reason: "Ovarian reserve; estimates remaining egg supply for fertility potential." },
         { cat: "Pathology", test: "Ana Profile", price: 5500, reason: "Autoimmune screening; detects antibodies attacking body's own cells (Lupus, etc)." },
@@ -336,9 +336,9 @@
     let timerInterval;
     let mistakeLog = [];
     const QUESTION_LIMIT = 20;
-    const TIME_PER_QUESTION = 15; // Seconds
+    const TIME_PER_QUESTION = 20; // Seconds
 
-    // Load High Score
+    
     document.getElementById('display-high-score').textContent = localStorage.getItem('carepointScore') || 0;
 
     function startQuiz() {
@@ -409,7 +409,7 @@
 
         document.getElementById('question-text').innerHTML = qText;
 
-        // Generate Options
+    
         let opts = generateDistractors(correctVal, distractorType, item);
         opts.push(correctVal);
         opts = shuffle(opts);
@@ -440,13 +440,13 @@
             document.getElementById('feedback').innerHTML = '<span style="color:green">Correct!</span>';
         } else {
             btn.classList.add('wrong');
-            // Highlight real answer
+            
             allBtns.forEach(b => {
                 if (b.innerHTML === correct) b.classList.add('correct');
             });
             document.getElementById('feedback').innerHTML = '<span style="color:red">Wrong!</span>';
             
-            // Log mistake
+            
             mistakeLog.push({ q: questionTitle, user: selected, real: correct });
         }
 
@@ -466,7 +466,7 @@
             if (val && val !== correct && val !== "null") set.add(val);
             max--;
         }
-        // Fallbacks
+        
         if (set.size < 3) {
              if (type === 'price') set.add('₹100').add('₹5000').add('₹1500');
              else set.add('Routine Checkup').add('Infection Check').add('Bone Scan');
@@ -517,14 +517,14 @@
         document.getElementById('final-score').textContent = score;
         document.getElementById('final-total').textContent = activeDb.length;
 
-        // High Score Logic
+        
         const oldHigh = localStorage.getItem('carepointScore') || 0;
         if (score > oldHigh) {
             localStorage.setItem('carepointScore', score);
             alert("New High Score!");
         }
 
-        // Mistake Logic
+        
         const container = document.getElementById('mistakes-container');
         const list = document.getElementById('mistake-list');
         list.innerHTML = '';
