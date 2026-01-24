@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carepoint Diagnostic Quiz</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background: var(--light);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .question-box {
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: #e2e6ea;
+            color: var(--secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 1fr;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+
+        .option-btn.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .next-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .next-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Carepoint Diagnostic</h1>
+    <p class="subtitle">Price & Clinical Significance Quiz</p>
+
+    <div class="score-board">
+        <span>Score: <span id="score">0</span></span>
+        <span>Question: <span id="q-number">0</span> / <span id="total-q">0</span></span>
+    </div>
+
+    <div class="question-box">
+        <div class="category-tag" id="category-tag">Category</div>
+        <div class="question-text" id="question-text">Loading...</div>
+        <div class="options-grid" id="options-grid">
+            </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
+</div>
+
+<script>
+    // --- DATABASE ---
+    // Merged data from "Price Chart.csv" and "Reason .csv"
+    const db = [
+        // X-Ray
+        { cat: "X-Ray", test: "Chest PA", price: 500, reason: "Checks lungs and heart; used for cough, chest pain, pneumonia, or TB screening." },
+        { cat: "X-Ray", test: "C Spine AP/LAT", price: 900, reason: "Images cervical vertebrae (neck); used for neck pain, trauma, or spondylosis." },
+        { cat: "X-Ray", test: "L Spine AP/LAT", price: 900, reason: "Images lumbar vertebrae (lower back); used for back pain, slip disc, or sciatica." },
+        { cat: "X-Ray", test: "Dorsal (Thoracic) AP/LAT", price: 900, reason: "Images mid-back; used for posture issues, pain, or trauma." },
+        { cat: "X-Ray", test: "Hand AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
+        { cat: "X-Ray", test: "Elbow AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
+        { cat: "X-Ray", test: "Wrist AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
+        { cat: "X-Ray", test: "Foot AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
+        { cat: "X-Ray", test: "Ankle AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
+        { cat: "X-Ray", test: "Knee AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
+        { cat: "X-Ray", test: "Leg AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
+        { cat: "X-Ray", test: "Skull AP/LAT", price: 900, reason: "Images skull bones; used for head trauma or bony abnormalities." },
+        { cat: "X-Ray", test: "PNS", price: 900, reason: "Images sinuses; used for chronic sinusitis, headache, or blockage." },
+        { cat: "X-Ray", test: "IVP", price: 3000, reason: "Kidney imaging with dye; used to check for kidney stones or urinary tract blockages." },
+        
+        // Special Studies
+        { cat: "Special Studies", test: "FNAC", price: 4500, reason: "Biopsy technique; used to test lumps (e.g., breast, thyroid) for cancer or infection." },
+        { cat: "Special Studies", test: "Barium Swallow", price: 2000, reason: "X-ray of esophagus with dye; used for difficulty swallowing." },
+        { cat: "Special Studies", test: "Barium Meal", price: 3500, reason: "X-ray of stomach/intestine; used for ulcers, pain, or digestive issues." },
+        { cat: "Special Studies", test: "HSG", price: 4500, reason: "Uterus/tube imaging; mainly used in infertility cases to check if fallopian tubes are open." },
+
+        // ECG
+        { cat: "ECG", test: "Electrocardiography", price: 500, reason: "Records heart rhythm; used for chest pain, palpitations, or routine heart check." },
+
+        // Pathology (Merged Data)
+        { cat: "Pathology", test: "APTT", price: 600, reason: null },
+        { cat: "Pathology", test: "AMH", price: 2200, reason: "Ovarian reserve; estimates remaining egg supply for fertility potential." },
+        { cat: "Pathology", test: "Ana Profile", price: 5500, reason: null },
+        { cat: "Pathology", test: "Amylase", price: 500, reason: "Pancreatic enzymes; used to diagnose Pancreatitis." },
+        { cat: "Pathology", test: "ANC Profile", price: 2500, reason: "Pregnancy panel; includes HIV, HBsAg, VDRL, CBC, Sugar, Blood Group to ensure mother/baby safety." },
+        { cat: "Pathology", test: "Anti CCP", price: 1400, reason: "Rheumatoid Arthritis screening; more specific for early diagnosis." },
+        { cat: "Pathology", test: "Alk. Phosphate", price: 200, reason: null },
+        { cat: "Pathology", test: "Blood Group", price: 250, reason: "Determines blood type (A/B/O, Rh); needed for surgery or donation." },
+        { cat: "Pathology", test: "BUN", price: 200, reason: null },
+        { cat: "Pathology", test: "Bilirubin", price: 200, reason: null },
+        { cat: "Pathology", test: "B-HCG", price: 600, reason: "Pregnancy hormone; confirms pregnancy via blood (more accurate than urine)." },
+        { cat: "Pathology", test: "BT CT", price: 300, reason: null },
+        { cat: "Pathology", test: "CBC", price: 250, reason: "Basic blood profile; checks for anemia, infection, and platelet count." },
+        { cat: "Pathology", test: "Creatinine", price: 200, reason: null },
+        { cat: "Pathology", test: "Calcium", price: 200, reason: "Bone health; checks for deficiency causing bone pain or weakness." },
+        { cat: "Pathology", test: "Cholesterol", price: 200, reason: null },
+        { cat: "Pathology", test: "CRP", price: 500, reason: "Acute inflammation marker; rises quickly in severe infections or inflammation." },
+        { cat: "Pathology", test: "CPK Total", price: 400, reason: null },
+        { cat: "Pathology", test: "CPK MB", price: 800, reason: null },
+        { cat: "Pathology", test: "Chikungunya", price: 1500, reason: null },
+        { cat: "Pathology", test: "Dengue NS1", price: 600, reason: "Dengue fever check; NS1 for early fever (Day 1-3)." },
+        { cat: "Pathology", test: "Dengue IgG/IgM", price: 1200, reason: "Dengue fever check; used for later stages." },
+        { cat: "Pathology", test: "Dual Marker", price: 2800, reason: "Maternal screening; estimates risk of Down Syndrome in the fetus." },
+        { cat: "Pathology", test: "ESR", price: 100, reason: "Inflammation marker; high levels suggest infection, TB, or autoimmune disease." },
+        { cat: "Pathology", test: "Electrolyte", price: 600, reason: "Sodium/Potassium levels; critical for hydration, heart, and nerve function." },
+        { cat: "Pathology", test: "Ferritin", price: 800, reason: "Iron levels; used to diagnose specific type of anemia." },
+        { cat: "Pathology", test: "Free T3 / T4", price: 1000, reason: "Detailed Thyroid function test." },
+        { cat: "Pathology", test: "Free PSA", price: 1000, reason: null },
+        { cat: "Pathology", test: "G6PD", price: 600, reason: null },
+        { cat: "Pathology", test: "FSH", price: 500, reason: "Reproductive hormone; used to investigate irregular periods or infertility." },
+        { cat: "Pathology", test: "HbA1c", price: 500, reason: "Average blood sugar over 3 months; gold standard for Diabetes monitoring." },
+        { cat: "Pathology", test: "HIV", price: 400, reason: null },
+        { cat: "Pathology", test: "HCV", price: 1000, reason: null },
+        { cat: "Pathology", test: "HBsAg", price: 800, reason: null },
+        { cat: "Pathology", test: "Homocysteine", price: 1200, reason: null },
+        { cat: "Pathology", test: "Iron Studies", price: 700, reason: "Iron levels; used to diagnose specific type of anemia." },
+        { cat: "Pathology", test: "Insulin (F)", price: 700, reason: null },
+        { cat: "Pathology", test: "Insulin (PP)", price: 700, reason: null },
+        { cat: "Pathology", test: "LFT", price: 800, reason: "Checks liver enzymes/bilirubin; used for jaundice, alcohol abuse, or liver damage." },
+        { cat: "Pathology", test: "Lipase", price: 500, reason: "Pancreatic enzymes; used to diagnose Pancreatitis." },
+        { cat: "Pathology", test: "Lipid Profile", price: 800, reason: "Cholesterol check; assesses risk of heart disease and stroke." },
+        { cat: "Pathology", test: "LH", price: 500, reason: "Reproductive hormone; used to investigate irregular periods or infertility." },
+        { cat: "Pathology", test: "Malaria (MP)", price: 300, reason: "Malaria check; MP is microscopy." },
+        { cat: "Pathology", test: "Malaria Antigen", price: 700, reason: "Malaria check; Antigen is a rapid kit test." },
+        { cat: "Pathology", test: "Mantoux Test", price: 500, reason: null },
+        { cat: "Pathology", test: "Magnesium", price: 500, reason: null },
+        { cat: "Pathology", test: "OGTT", price: 400, reason: null },
+        { cat: "Pathology", test: "PT-INR", price: 500, reason: "Clotting time; essential for patients on blood thinners (like Warfarin)." },
+        { cat: "Pathology", test: "PSFOR MP", price: 300, reason: null },
+        { cat: "Pathology", test: "Prolactin", price: 500, reason: "Reproductive hormone; used to investigate irregular periods or infertility." },
+        { cat: "Pathology", test: "Platelet Count", price: 300, reason: null },
+        { cat: "Pathology", test: "Quadruple Marker", price: 3000, reason: "Maternal screening; estimates risk of Down Syndrome in the fetus." },
+        { cat: "Pathology", test: "RFT", price: 1100, reason: "Checks Urea/Creatinine; monitors kidney health and filtration capability." },
+        { cat: "Pathology", test: "RA Factor", price: 500, reason: "Rheumatoid Arthritis screening." },
+        { cat: "Pathology", test: "RT-PCR", price: 1000, reason: null },
+        { cat: "Pathology", test: "Sugar (F)", price: 100, reason: "Glucose test; Fasting (F) to screen or monitor Diabetes." },
+        { cat: "Pathology", test: "Sugar (PP)", price: 100, reason: "Glucose test; Post-meal (PP) to screen or monitor Diabetes." },
+        { cat: "Pathology", test: "Sugar (R)", price: 100, reason: "Glucose test; Random (R) to screen or monitor Diabetes." },
+        { cat: "Pathology", test: "SGOT", price: 200, reason: null },
+        { cat: "Pathology", test: "SGPT", price: 200, reason: null },
+        { cat: "Pathology", test: "Stool R/M", price: 250, reason: "Routine stool test; checks for parasites or infection." },
+        { cat: "Pathology", test: "Stool C/S", price: 1600, reason: null },
+        { cat: "Pathology", test: "Semen Analysis", price: 500, reason: "Male fertility test; checks sperm count and motility." },
+        { cat: "Pathology", test: "T3 T4 TSH", price: 500, reason: "Thyroid profile; checks for Hypo- or Hyperthyroidism." },
+        { cat: "Pathology", test: "Troponin I", price: 1200, reason: "Cardiac marker; critical test to confirm a Heart Attack." },
+        { cat: "Pathology", test: "Troponin T", price: 1800, reason: "Cardiac marker; critical test to confirm a Heart Attack." },
+        { cat: "Pathology", test: "Total Protein", price: 200, reason: null },
+        { cat: "Pathology", test: "Urine R/M", price: 300, reason: "Routine urine test; checks for UTI, sugar in urine, or kidney issues." },
+        { cat: "Pathology", test: "Urine C/S", price: 1800, reason: null },
+        { cat: "Pathology", test: "Urea", price: 200, reason: null },
+        { cat: "Pathology", test: "Uric Acid", price: 200, reason: null },
+        { cat: "Pathology", test: "VDRL", price: 300, reason: null },
+        { cat: "Pathology", test: "Vit D3", price: 1200, reason: "Bone health; checks for deficiency causing bone pain or weakness." },
+        { cat: "Pathology", test: "Vit B12", price: 1000, reason: "Nerve/Blood health; checks for deficiency causing fatigue or tingling." },
+        { cat: "Pathology", test: "Widal", price: 300, reason: "Typhoid fever test; checks for Salmonella infection." },
+
+        // Ultrasound
+        { cat: "Ultrasound", test: "Early OBS/Routine Scan", price: 1800, reason: "Early pregnancy scan; checks fetal heartbeat and viability." },
+        { cat: "Ultrasound", test: "Upper Abdomen / Pelvis / KUB", price: 1800, reason: "Checks specific organs (Liver/Kidney/Uterus); used for pain or stones." },
+        { cat: "Ultrasound", test: "Abdomen + Pelvis", price: 1800, reason: "Comprehensive scan of belly area; used for general abdominal pain or organ checks." },
+        { cat: "Ultrasound", test: "NT Scan (3-4 Month)", price: 2800, reason: "Nuchal Translucency; screens for Down Syndrome and chromosomal abnormalities." },
+        { cat: "Ultrasound", test: "Anomaly Scan (5th Month)", price: 3500, reason: "Detailed scan; checks baby's physical development and organs for defects." },
+        { cat: "Ultrasound", test: "Colour Doppler (Obstetric)", price: 3500, reason: "Checks blood flow to the baby; used in high-risk pregnancies." },
+        { cat: "Ultrasound", test: "Venous/Renal/Arterial Doppler", price: 3500, reason: "Checks blood flow in vessels; used for DVT (clots) or kidney artery stenosis." },
+        { cat: "Ultrasound", test: "Small Parts", price: 2500, reason: "High-frequency scan; used for lumps in breast, thyroid, or scrotum." },
+        { cat: "Ultrasound", test: "Sonomamography (Breast)", price: 2500, reason: "High-frequency scan; used for lumps in breast." },
+        { cat: "Ultrasound", test: "USG Thyroid / Neck", price: 2500, reason: "High-frequency scan; used for lumps in thyroid." },
+        { cat: "Ultrasound", test: "Follicular Study (Cycle)", price: 1500, reason: "Tracks egg release; used for fertility treatment planning (4 Times)." },
+        { cat: "Ultrasound", test: "Follicular Study (One Day)", price: 500, reason: "Tracks egg release; single session." },
+        { cat: "Ultrasound", test: "2D Echo / Fetal 2D Echo", price: 2500, reason: "Heart ultrasound; checks pumping function (adults) or heart defects (fetus)." },
+        { cat: "Ultrasound", test: "Fetal 2D Echo (Specific)", price: 4000, reason: "Detailed heart ultrasound for fetus." },
+        { cat: "Ultrasound", test: "USG Scrotum", price: 2500, reason: "Scan of scrotum; used for pain or lumps." },
+        { cat: "Ultrasound", test: "Scrotum Doppler Study", price: 3500, reason: "Checks blood flow in scrotum; used for torsion or varicocele." },
+        { cat: "Ultrasound", test: "B Scan", price: 3000, reason: null }
+    ];
+
+    // --- LOGIC ---
+    let currentQuestion = null;
+    let score = 0;
+    let questionCount = 0;
+    const totalQuestions = 20; // Set limit per session
+
+    // Shuffle array function (Fisher-Yates)
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Initialize
+    const shuffledDb = shuffle([...db]);
+    document.getElementById('total-q').textContent = totalQuestions;
+
+    function generateDistractors(correctAnswer, type) {
+        let distractors = new Set();
+        let maxAttempts = 50;
+        
+        while (distractors.size < 3 && maxAttempts > 0) {
+            let randomItem = db[Math.floor(Math.random() * db.length)];
+            let val;
+            
+            if (type === 'price') val = randomItem.price;
+            else if (type === 'test') val = randomItem.test;
+            else if (type === 'reason') val = randomItem.reason;
+            
+            // Validate distractor
+            if (val && val !== correctAnswer && val !== "null") {
+                distractors.add(val);
+            }
+            maxAttempts--;
+        }
+        
+        // Fallback if we couldn't find unique distractors (rare)
+        if (distractors.size < 3) {
+            if (type === 'price') distractors.add(100).add(500).add(1000);
+            else distractors.add("General Checkup").add("Routine Scan").add("Blood Test");
+        }
+
+        return Array.from(distractors);
+    }
+
+    function createQuestion() {
+        if (questionCount >= totalQuestions) {
+            endQuiz();
+            return;
+        }
+
+        // Pick next item from shuffled DB
+        // If we run out of shuffled items, reshuffle
+        let itemIndex = questionCount % shuffledDb.length;
+        let item = shuffledDb[itemIndex];
+
+        // Determine Question Type based on available data
+        // Types: 0 = Ask Price, 1 = Ask Reason (if exists), 2 = Reverse Reason (Given reason, ask test)
+        let possibleTypes = [0]; 
+        if (item.reason) {
+            possibleTypes.push(1);
+            possibleTypes.push(2);
+        }
+        
+        let qType = possibleTypes[Math.floor(Math.random() * possibleTypes.length)];
+        
+        let qText = "";
+        let correctAns = "";
+        let options = [];
+        let catText = item.cat;
+
+        if (qType === 0) { // Ask Price
+            qText = `What is the price of <br><span style="color:#007bff">${item.test}</span>?`;
+            correctAns = item.price;
+            options = generateDistractors(correctAns, 'price');
+            options.push(correctAns);
+            // Add currency symbol to display
+            options = options.map(o => `₹${o}`);
+            correctAns = `₹${correctAns}`;
+        } else if (qType === 1) { // Ask Significance
+            qText = `What is the clinical significance of <br><span style="color:#007bff">${item.test}</span>?`;
+            correctAns = item.reason;
+            options = generateDistractors(correctAns, 'reason');
+            options.push(correctAns);
+        } else { // Ask Test Name given Significance
+            qText = `Which test is described by:<br><em>"${item.reason}"</em>?`;
+            correctAns = item.test;
+            options = generateDistractors(correctAns, 'test');
+            options.push(correctAns);
+        }
+
+        // Shuffle options
+        options = shuffle(options);
+
+        // Update UI
+        document.getElementById('category-tag').textContent = catText;
+        document.getElementById('question-text').innerHTML = qText;
+        document.getElementById('q-number').textContent = questionCount + 1;
+        
+        const grid = document.getElementById('options-grid');
+        grid.innerHTML = ''; // Clear previous
+
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => checkAnswer(btn, opt, correctAns);
+            grid.appendChild(btn);
+        });
+
+        // Reset state
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Lock grid? No, just tracking state
+        currentQuestion = { correct: correctAns, answered: false };
+    }
+
+    function checkAnswer(btn, selected, correct) {
+        if (currentQuestion.answered) return;
+        currentQuestion.answered = true;
+
+        const feedback = document.getElementById('feedback');
+        const grid = document.getElementById('options-grid');
+        
+        // Highlight logic
+        if (selected === correct) {
+            btn.classList.add('correct');
+            feedback.innerHTML = `<span style="color:green; font-weight:bold">Correct!</span>`;
+            feedback.style.backgroundColor = "#d4edda";
+            score++;
+            document.getElementById('score').textContent = score;
+        } else {
+            btn.classList.add('wrong');
+            feedback.innerHTML = `<span style="color:red; font-weight:bold">Incorrect.</span> The correct answer is <strong>${correct}</strong>.`;
+            feedback.style.backgroundColor = "#f8d7da";
+            
+            // Find and highlight real correct answer
+            Array.from(grid.children).forEach(child => {
+                if (child.innerHTML === correct.toString()) {
+                    child.classList.add('correct');
+                }
+            });
+        }
+
+        feedback.classList.add('show');
+        document.getElementById('next-btn').style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        questionCount++;
+        createQuestion();
+    }
+
+    function endQuiz() {
+        document.querySelector('.container').innerHTML = `
+            <h1>Quiz Completed!</h1>
+            <p>Your final score is <strong>${score}</strong> out of <strong>${totalQuestions}</strong>.</p>
+            <button class="next-btn" style="display:inline-block" onclick="location.reload()">Restart Quiz</button>
+        `;
+    }
+
+    // Start
+    createQuestion();
+
+</script>
+
+</body>
+</html>
