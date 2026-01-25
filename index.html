@@ -2,556 +2,522 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carepoint Diagnostic Quiz Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Carepoint Diagnostic Quiz</title>
     <style>
-        :root {
-            --primary: #007bff;
-            --secondary: #6c757d;
-            --success: #28a745;
-            --danger: #dc3545;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --warning: #ffc107;
+        :root { 
+            --primary: #007bff; 
+            --success: #28a745; 
+            --danger: #dc3545; 
+            --light: #f8f9fa; 
+            --dark: #343a40; 
+            --warning: #ffc107; 
+            --bg: #e9ecef;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e9ecef;
-            margin: 0;
-            display: flex;
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            min-height: 100vh; 
+            padding: 15px;
+            box-sizing: border-box;
         }
 
-        .container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-        }
-
-        h1 { color: var(--primary); margin-bottom: 0.5rem; }
-        
-        /* Start Screen Styling */
-        #start-screen { display: block; }
-        #quiz-screen { display: none; }
-        #end-screen { display: none; }
-
-        .filter-select {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin: 20px 0;
-            width: 100%;
-        }
-
-        .start-btn {
-            background-color: var(--success);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s;
-        }
-
-        .start-btn:hover { transform: scale(1.05); }
-
-        /* Quiz UI */
-        .top-bar {
+        .container { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 16px; 
+            width: 100%; 
+            max-width: 500px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            font-weight: bold;
-            color: var(--secondary);
-            font-size: 0.9rem;
-        }
-
-        .timer-bar {
-            height: 6px;
-            background: #eee;
-            border-radius: 3px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            max-height: 90vh; /* Fits on mobile screens */
+            position: relative;
             overflow: hidden;
         }
 
-        .timer-fill {
-            height: 100%;
-            background: var(--warning);
-            width: 100%;
-            transition: width 1s linear;
+        /* --- Header & Stats --- */
+        h1 { color: var(--primary); margin: 0 0 5px 0; font-size: 1.6rem; }
+        .subtitle { color: #6c757d; margin-bottom: 15px; font-size: 0.9rem; }
+
+        .stats-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            font-weight: 700; 
+            color: #555; 
+            margin-bottom: 10px; 
+            font-size: 0.9rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
         }
 
-        .question-text {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--dark);
-            min-height: 80px;
+        /* --- Timer --- */
+        .timer-track { 
+            height: 6px; 
+            background: #eee; 
+            border-radius: 3px; 
+            overflow: hidden; 
+            margin-bottom: 15px; 
+            flex-shrink: 0;
+        }
+        .timer-fill { 
+            height: 100%; 
+            background: var(--warning); 
+            width: 100%; 
+            transition: width 1s linear; 
+        }
+
+        /* --- Question Box (Fixed UI) --- */
+        .question-box {
+            min-height: 90px; 
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .options-grid {
-            display: grid;
-            gap: 12px;
-            grid-template-columns: 1fr;
-        }
-
-        .option-btn {
-            background: white;
-            border: 2px solid #e9ecef;
-            padding: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1rem;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
             color: var(--dark);
-            font-weight: 500;
+            line-height: 1.35;
+            padding: 0 5px;
+            flex-shrink: 0;
         }
 
-        .option-btn:hover { border-color: var(--primary); background: #f8f9fa; }
-        
-        .option-btn.correct { background-color: var(--success); color: white; border-color: var(--success); }
-        .option-btn.wrong { background-color: var(--danger); color: white; border-color: var(--danger); }
-        
-        /* End Screen */
-        .mistake-list {
-            text-align: left;
-            margin-top: 20px;
-            max-height: 300px;
+        /* --- Buttons --- */
+        #options {
             overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px; /* Space for scrollbar */
+        }
+
+        .option-btn { 
+            background: white; 
+            border: 2px solid #e9ecef; 
+            padding: 14px 10px; 
+            border-radius: 12px; 
+            width: 100%; 
+            margin-bottom: 10px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            transition: all 0.2s ease; 
+            font-weight: 500; 
+            color: #444;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .option-btn:hover:not(:disabled) { 
+            border-color: var(--primary); 
+            background: #f8faff; 
+            transform: translateY(-1px);
+        }
+
+        .option-btn.correct { background: var(--success); color: white; border-color: var(--success); }
+        .option-btn.wrong { background: var(--danger); color: white; border-color: var(--danger); }
+        
+        .main-btn { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 50px; 
+            font-size: 1.1rem; 
+            font-weight: bold;
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 10px; 
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+            transition: transform 0.1s;
+            flex-shrink: 0;
+        }
+        .main-btn:active { transform: scale(0.96); }
+
+        /* --- Inputs --- */
+        select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 15px 0; 
+            border-radius: 10px; 
+            border: 2px solid #eee; 
+            font-size: 1rem; 
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        /* --- Screens --- */
+        #quiz-screen, #end-screen { display: none; height: 100%; flex-direction: column; }
+        
+        /* --- Mobile Scrolling Fixes --- */
+        #mistakes {
+            text-align: left;
+            flex-grow: 1; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
+            overscroll-behavior: contain; 
             border: 1px solid #eee;
             padding: 10px;
-            border-radius: 8px;
-        }
-        
-        .mistake-item {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
+            margin: 15px 0;
+            border-radius: 10px;
+            background: #fcfcfc;
             font-size: 0.9rem;
         }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 
-        .high-score {
-            color: var(--warning);
-            font-weight: bold;
-            margin-top: 10px;
-            text-shadow: 1px 1px 0 #999;
-        }
-
-        @media (max-width: 480px) {
-            .container { padding: 1.5rem; }
-            .question-text { font-size: 1.1rem; }
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    
     <div id="start-screen">
         <h1>Carepoint Quiz</h1>
-        <p>Corporate care at affordable Rates</p>
+        <p class="subtitle">Price, Significance & Package Master</p>
         
-        <div style="text-align: left; margin-bottom: 5px;"><strong>Select Category:</strong></div>
-        <select id="category-filter" class="filter-select">
-            <option value="All">All Categories (Mix)</option>
-            <option value="Pathology">Pathology Only</option>
-            <option value="X-Ray">X-Ray Only</option>
-            <option value="Ultrasound">Ultrasound Only</option>
+        <label style="display:block; text-align:left; font-weight:bold; color:#444; margin-left:5px;">Select Topic:</label>
+        <select id="cat-filter">
+            <option value="All">All Sections (Exam Mode)</option>
+            <option value="Packages">📦 Full Body Package (New)</option>
+            <option value="Pathology">Pathology</option>
+            <option value="X-Ray">X-Ray</option>
+            <option value="Ultrasound">Ultrasound</option>
             <option value="Special Studies">Special Studies</option>
         </select>
-
-        <div class="high-score">🏆 Your High Score: <span id="display-high-score">0</span></div>
-        <br>
-        <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+        
+        <button class="main-btn" onclick="startQuiz()">Start Training</button>
     </div>
 
     <div id="quiz-screen">
-        <div class="top-bar">
+        <div class="stats-bar">
             <span>Score: <span id="score">0</span></span>
-            <span>Q: <span id="q-number">1</span>/<span id="total-q">20</span></span>
+            <span>Q: <span id="q-num">1</span> / <span id="q-total">0</span></span>
         </div>
         
-        <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
-
-        <div class="question-text" id="question-text">Loading...</div>
-        <div class="options-grid" id="options-grid"></div>
-        <div id="feedback" style="margin-top:15px; font-weight:bold; min-height:24px;"></div>
+        <div class="timer-track"><div class="timer-fill" id="timer"></div></div>
         
-        <button id="next-btn" class="start-btn" style="margin-top:20px; font-size:1rem; padding:10px; display:none;" onclick="nextQuestion()">Next</button>
+        <div class="question-box" id="question">Loading...</div>
+        
+        <div id="options"></div>
+        
+        <div id="feedback" style="height:20px; font-weight:bold; margin-top:5px; font-size:0.9rem; flex-shrink:0;"></div>
+        
+        <button id="next-btn" class="main-btn" style="display:none;" onclick="nextQuestion()">Next Question</button>
     </div>
 
     <div id="end-screen">
-        <h1>Quiz Completed!</h1>
-        <p style="font-size:1.2rem">Final Score: <strong id="final-score">0</strong> / <span id="final-total">0</span></p>
+        <h1>Training Complete!</h1>
+        <p style="font-size:1.3rem; color:#444; margin: 10px 0;">Final Score: <strong style="color:var(--primary)" id="final-score">0</strong></p>
         
-        <div id="mistakes-container" style="display:none;">
-            <h3>Review Mistakes</h3>
-            <div class="mistake-list" id="mistake-list"></div>
-        </div>
-
-        <br>
-        <button class="start-btn" onclick="location.reload()">Play Again</button>
+        <div id="mistakes" style="display:none;"></div>
+        
+        <button class="main-btn" onclick="location.reload()">Restart</button>
     </div>
+
 </div>
 
 <script>
-    // --- DATABASE (FULLY POPULATED) ---
-    const db = [
-        // X-Ray
-        { cat: "X-Ray", test: "Chest PA", price: 500, reason: "Checks lungs and heart; used for cough, chest pain, pneumonia, or TB screening." },
-        { cat: "X-Ray", test: "C Spine AP/LAT", price: 900, reason: "Images cervical vertebrae (neck); used for neck pain, trauma, or spondylosis." },
-        { cat: "X-Ray", test: "L Spine AP/LAT", price: 900, reason: "Images lumbar vertebrae (lower back); used for back pain, slip disc, or sciatica." },
-        { cat: "X-Ray", test: "Dorsal (Thoracic) AP/LAT", price: 900, reason: "Images mid-back; used for posture issues, pain, or trauma." },
-        { cat: "X-Ray", test: "Hand AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
-        { cat: "X-Ray", test: "Elbow AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
-        { cat: "X-Ray", test: "Wrist AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
-        { cat: "X-Ray", test: "Foot AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
-        { cat: "X-Ray", test: "Ankle AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
-        { cat: "X-Ray", test: "Knee AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
-        { cat: "X-Ray", test: "Leg AP/LAT", price: 900, reason: "Orthopedic imaging; used to detect fractures, dislocations, or arthritis." },
-        { cat: "X-Ray", test: "Skull AP/LAT", price: 900, reason: "Images skull bones; used for head trauma or bony abnormalities." },
-        { cat: "X-Ray", test: "PNS", price: 900, reason: "Images sinuses; used for chronic sinusitis, headache, or blockage." },
-        { cat: "X-Ray", test: "IVP", price: 3000, reason: "Kidney imaging with dye; used to check for kidney stones or urinary tract blockages." },
-        
-        // Special Studies
-        { cat: "Special Studies", test: "FNAC", price: 4500, reason: "Biopsy technique; used to test lumps (e.g., breast, thyroid) for cancer or infection." },
-        { cat: "Special Studies", test: "Barium Swallow", price: 2000, reason: "X-ray of esophagus with dye; used for difficulty swallowing." },
-        { cat: "Special Studies", test: "Barium Meal", price: 3500, reason: "X-ray of stomach/intestine; used for ulcers, pain, or digestive issues." },
-        { cat: "Special Studies", test: "HSG", price: 4500, reason: "Uterus/tube imaging; mainly used in infertility cases to check if fallopian tubes are open." },
+// --- MAIN DATABASE ---
+const db = [
+    // X-RAY
+    {c:"X-Ray",t:"Chest PA",p:500,r:"Checks lungs/heart; for cough, pneumonia, TB"},
+    {c:"X-Ray",t:"C Spine AP/LAT",p:900,r:"Neck vertebrae; for neck pain, trauma, spondylosis"},
+    {c:"X-Ray",t:"L Spine AP/LAT",p:900,r:"Lower back vertebrae; for slip disc, sciatica"},
+    {c:"X-Ray",t:"Dorsal Spine AP/LAT",p:900,r:"Mid-back; for posture issues, trauma"},
+    {c:"X-Ray",t:"Hand AP/LAT",p:900,r:"Orthopedic; fractures, arthritis in hand"},
+    {c:"X-Ray",t:"Elbow AP/LAT",p:900,r:"Orthopedic; fractures, dislocation in elbow"},
+    {c:"X-Ray",t:"Wrist AP/LAT",p:900,r:"Orthopedic; fractures, arthritis in wrist"},
+    {c:"X-Ray",t:"Foot AP/LAT",p:900,r:"Orthopedic; fractures in foot"},
+    {c:"X-Ray",t:"Ankle AP/LAT",p:900,r:"Orthopedic; sprains, fractures in ankle"},
+    {c:"X-Ray",t:"Knee AP/LAT",p:900,r:"Orthopedic; arthritis, gaps in knee joint"},
+    {c:"X-Ray",t:"Leg AP/LAT",p:900,r:"Orthopedic; fractures in tibia/fibula"},
+    {c:"X-Ray",t:"Skull AP/LAT",p:900,r:"Head trauma, bony abnormalities"},
+    {c:"X-Ray",t:"PNS (Sinus)",p:900,r:"Sinusitis, headache, blockage"},
+    {c:"X-Ray",t:"IVP",p:3000,r:"Kidney dye test; stones, urinary blockage"},
 
-        // ECG
-        { cat: "ECG", test: "Electrocardiography", price: 500, reason: "Records heart rhythm; used for chest pain, palpitations, or routine heart check." },
+    // SPECIAL STUDIES
+    {c:"Special Studies",t:"FNAC",p:4500,r:"Biopsy of lumps (breast/thyroid) for cancer"},
+    {c:"Special Studies",t:"Barium Swallow",p:2000,r:"Esophagus X-ray; difficulty swallowing"},
+    {c:"Special Studies",t:"Barium Meal",p:3500,r:"Stomach/Intestine X-ray; ulcers, digestive issues"},
+    {c:"Special Studies",t:"HSG",p:4500,r:"Uterus/Tube check; infertility, blocked tubes"},
 
-        // Pathology ( Reasons)
-        { cat: "Pathology", test: "APTT", price: 600, reason: "Clotting test; monitors patients on Heparin or with bleeding disorders." },
-        { cat: "Pathology", test: "AMH", price: 2200, reason: "Ovarian reserve; estimates remaining egg supply for fertility potential." },
-        { cat: "Pathology", test: "Ana Profile", price: 5500, reason: "Autoimmune screening; detects antibodies attacking body's own cells (Lupus, etc)." },
-        { cat: "Pathology", test: "Amylase", price: 500, reason: "Pancreatic enzymes; used to diagnose Pancreatitis." },
-        { cat: "Pathology", test: "ANC Profile", price: 2500, reason: "Pregnancy panel; includes HIV, HBsAg, VDRL, CBC, Sugar, Blood Group to ensure mother/baby safety." },
-        { cat: "Pathology", test: "Anti CCP", price: 1400, reason: "Rheumatoid Arthritis screening; more specific for early diagnosis." },
-        { cat: "Pathology", test: "Alk. Phosphate", price: 200, reason: "Liver and bone marker; high levels suggest liver blockage or bone disease." },
-        { cat: "Pathology", test: "Blood Group", price: 250, reason: "Determines blood type (A/B/O, Rh); needed for surgery or donation." },
-        { cat: "Pathology", test: "BUN", price: 200, reason: "Kidney function; measures nitrogen in blood coming from waste product urea." },
-        { cat: "Pathology", test: "Bilirubin", price: 200, reason: "Liver function; high levels cause jaundice (yellow skin/eyes)." },
-        { cat: "Pathology", test: "B-HCG", price: 600, reason: "Pregnancy hormone; confirms pregnancy via blood (more accurate than urine)." },
-        { cat: "Pathology", test: "BT CT", price: 300, reason: "Bleeding & Clotting Time; basic check of clotting ability before minor surgery." },
-        { cat: "Pathology", test: "CBC", price: 250, reason: "Basic blood profile; checks for anemia, infection, and platelet count." },
-        { cat: "Pathology", test: "Creatinine", price: 200, reason: "Kidney health; key marker for how well kidneys are filtering waste." },
-        { cat: "Pathology", test: "Calcium", price: 200, reason: "Bone health; checks for deficiency causing bone pain or weakness." },
-        { cat: "Pathology", test: "Cholesterol", price: 200, reason: "Heart health; measures total fat in blood." },
-        { cat: "Pathology", test: "CRP", price: 500, reason: "Acute inflammation marker; rises quickly in severe infections or inflammation." },
-        { cat: "Pathology", test: "CPK Total", price: 400, reason: "Muscle enzyme; indicates injury or stress to heart, brain, or skeletal muscle." },
-        { cat: "Pathology", test: "CPK MB", price: 800, reason: "Cardiac enzyme; specific marker for heart muscle damage (Heart Attack)." },
-        { cat: "Pathology", test: "Chikungunya", price: 1500, reason: "Viral test; screens for Chikungunya virus infection transmitted by mosquitoes." },
-        { cat: "Pathology", test: "Dengue NS1", price: 600, reason: "Dengue fever check; NS1 for early fever (Day 1-3)." },
-        { cat: "Pathology", test: "Dengue IgG/IgM", price: 1200, reason: "Dengue fever check; used for later stages." },
-        { cat: "Pathology", test: "Dual Marker", price: 2800, reason: "Maternal screening; estimates risk of Down Syndrome in the fetus." },
-        { cat: "Pathology", test: "ESR", price: 100, reason: "Inflammation marker; high levels suggest infection, TB, or autoimmune disease." },
-        { cat: "Pathology", test: "Electrolyte", price: 600, reason: "Sodium/Potassium levels; critical for hydration, heart, and nerve function." },
-        { cat: "Pathology", test: "Ferritin", price: 800, reason: "Iron storage; best test to diagnose iron deficiency anemia." },
-        { cat: "Pathology", test: "Free TFT", price: 1000, reason: "Detailed Thyroid function test; measures active thyroid hormones." },
-        { cat: "Pathology", test: "Free PSA", price: 1000, reason: "Prostate screening; helps distinguish between cancer and benign enlargement." },
-        { cat: "Pathology", test: "G6PD", price: 600, reason: "Enzyme check; deficiency can cause blood cells to break down (hemolytic anemia)." },
-        { cat: "Pathology", test: "FSH", price: 500, reason: "Reproductive hormone; used to investigate irregular periods or infertility." },
-        { cat: "Pathology", test: "HbA1c", price: 500, reason: "Average blood sugar over 3 months; gold standard for Diabetes monitoring." },
-        { cat: "Pathology", test: "HIV", price: 400, reason: "Viral screening; checks for Human Immunodeficiency Virus." },
-        { cat: "Pathology", test: "HCV", price: 1000, reason: "Hepatitis C screening; viral infection affecting the liver." },
-        { cat: "Pathology", test: "HBsAg", price: 800, reason: "Hepatitis B screening; checks for active viral infection in liver." },
-        { cat: "Pathology", test: "Homocysteine", price: 1200, reason: "Cardiac risk; high levels indicate risk of stroke or heart disease." },
-        { cat: "Pathology", test: "Iron Studies", price: 700, reason: "Iron panel; detailed check of iron levels and binding capacity." },
-        { cat: "Pathology", test: "Insulin (F)", price: 700, reason: "Fasting Insulin; checks insulin production baseline for diabetes." },
-        { cat: "Pathology", test: "Insulin (PP)", price: 700, reason: "Post-Prandial Insulin; checks insulin response after eating." },
-        { cat: "Pathology", test: "LFT", price: 800, reason: "Checks liver enzymes/bilirubin; used for jaundice, alcohol abuse, or liver damage." },
-        { cat: "Pathology", test: "Lipase", price: 500, reason: "Pancreatic enzyme; more specific than amylase for diagnosing Pancreatitis." },
-        { cat: "Pathology", test: "Lipid Profile", price: 800, reason: "Cholesterol check; assesses risk of heart disease and stroke." },
-        { cat: "Pathology", test: "LH", price: 500, reason: "Reproductive hormone; triggers ovulation in women and testosterone in men." },
-        { cat: "Pathology", test: "Malaria (MP)", price: 300, reason: "Malaria check; MP is microscopy (looking for parasite in blood)." },
-        { cat: "Pathology", test: "Malaria Antigen", price: 700, reason: "Malaria check; Antigen is a rapid kit test for quick results." },
-        { cat: "Pathology", test: "Mantoux Test", price: 500, reason: "TB skin test; checks for exposure to Tuberculosis bacteria." },
-        { cat: "Pathology", test: "Magnesium", price: 500, reason: "Mineral check; low levels cause muscle cramps and heart irregularities." },
-        { cat: "Pathology", test: "OGTT", price: 400, reason: "Glucose tolerance; used to diagnose gestational diabetes during pregnancy." },
-        { cat: "Pathology", test: "PT-INR", price: 500, reason: "Clotting time; essential for patients on blood thinners (like Warfarin)." },
-        { cat: "Pathology", test: "PSFOR MP", price: 300, reason: "Peripheral Smear; microscopic check specifically for Malaria Parasite." },
-        { cat: "Pathology", test: "Prolactin", price: 500, reason: "Hormone check; high levels cause infertility and milk discharge." },
-        { cat: "Pathology", test: "Platelet Count", price: 300, reason: "Clotting cells; monitors dengue recovery or bleeding disorders." },
-        { cat: "Pathology", test: "Quadruple Marker", price: 3000, reason: "Maternal screening; estimates risk of Down Syndrome in the fetus." },
-        { cat: "Pathology", test: "RFT", price: 1100, reason: "Checks Urea/Creatinine; monitors kidney health and filtration capability." },
-        { cat: "Pathology", test: "RA Factor", price: 500, reason: "Rheumatoid Arthritis screening; detects autoantibodies." },
-        { cat: "Pathology", test: "RT-PCR", price: 1000, reason: "Molecular test; gold standard for detecting viral genetic material (like COVID)." },
-        { cat: "Pathology", test: "Sugar (F)", price: 100, reason: "Glucose test; Fasting (F) to screen or monitor Diabetes." },
-        { cat: "Pathology", test: "Sugar (PP)", price: 100, reason: "Glucose test; Post-meal (PP) to screen or monitor Diabetes." },
-        { cat: "Pathology", test: "Sugar (R)", price: 100, reason: "Glucose test; Random (R) to screen or monitor Diabetes." },
-        { cat: "Pathology", test: "SGOT", price: 200, reason: "Liver enzyme (AST); released into blood when liver or heart is damaged." },
-        { cat: "Pathology", test: "SGPT", price: 200, reason: "Liver enzyme (ALT); very specific marker for liver damage/hepatitis." },
-        { cat: "Pathology", test: "Stool R/M", price: 250, reason: "Routine stool test; checks for parasites or infection." },
-        { cat: "Pathology", test: "Stool C/S", price: 1600, reason: "Stool Culture; identifies specific bacteria causing severe diarrhea." },
-        { cat: "Pathology", test: "Semen Analysis", price: 500, reason: "Male fertility test; checks sperm count and motility." },
-        { cat: "Pathology", test: "T3 T4 TSH", price: 500, reason: "Thyroid profile; checks for Hypo- or Hyperthyroidism." },
-        { cat: "Pathology", test: "Troponin I", price: 1200, reason: "Cardiac marker; critical test to confirm a Heart Attack." },
-        { cat: "Pathology", test: "Troponin T", price: 1800, reason: "Cardiac marker; critical test to confirm a Heart Attack." },
-        { cat: "Pathology", test: "Total Protein", price: 200, reason: "Nutritional status; measures albumin and globulin in blood." },
-        { cat: "Pathology", test: "Urine R/M", price: 300, reason: "Routine urine test; checks for UTI, sugar in urine, or kidney issues." },
-        { cat: "Pathology", test: "Urine C/S", price: 1800, reason: "Urine Culture; identifies specific bacteria causing UTI for antibiotic selection." },
-        { cat: "Pathology", test: "Urea", price: 200, reason: "Kidney waste product; high levels indicate poor kidney filtration." },
-        { cat: "Pathology", test: "Uric Acid", price: 200, reason: "Gout check; high levels cause crystals in joints and kidney stones." },
-        { cat: "Pathology", test: "VDRL", price: 300, reason: "Syphilis screening; checks for sexually transmitted bacterial infection." },
-        { cat: "Pathology", test: "Vit D3", price: 1200, reason: "Bone health; checks for deficiency causing bone pain or weakness." },
-        { cat: "Pathology", test: "Vit B12", price: 1000, reason: "Nerve/Blood health; checks for deficiency causing fatigue or tingling." },
-        { cat: "Pathology", test: "Widal", price: 300, reason: "Typhoid fever test; checks for Salmonella infection." },
+    // ULTRASOUND
+    {c:"Ultrasound",t:"Early OBS",p:1800,r:"Early pregnancy; heartbeat & viability"},
+    {c:"Ultrasound",t:"Upper Abdomen",p:1800,r:"Liver, Gallbladder, Pancreas check"},
+    {c:"Ultrasound",t:"Pelvis",p:1800,r:"Uterus, Ovaries, Bladder check"},
+    {c:"Ultrasound",t:"KUB",p:1800,r:"Kidney, Ureter, Bladder; stones/pain"},
+    {c:"Ultrasound",t:"Abdomen + Pelvis",p:1800,r:"Full belly scan; general pain check"},
+    {c:"Ultrasound",t:"NT Scan",p:2800,r:"3-4 Month pregnancy; Down Syndrome screen"},
+    {c:"Ultrasound",t:"Anomaly Scan",p:3500,r:"5th Month; detailed baby organ check"},
+    {c:"Ultrasound",t:"Obstetric Doppler",p:3500,r:"Blood flow to baby; high-risk pregnancy"},
+    {c:"Ultrasound",t:"Renal Doppler",p:3500,r:"Kidney blood flow; hypertension check"},
+    {c:"Ultrasound",t:"Venous Doppler",p:3500,r:"Leg veins; DVT (clots) check"},
+    {c:"Ultrasound",t:"Sonomamography",p:2500,r:"Breast ultrasound; lumps/cancer check"},
+    {c:"Ultrasound",t:"USG Thyroid",p:2500,r:"Neck ultrasound; thyroid lumps"},
+    {c:"Ultrasound",t:"USG Scrotum",p:2500,r:"Testicle scan; pain or swelling"},
+    {c:"Ultrasound",t:"Follicular Study",p:1500,r:"Tracking egg release (4 sessions)"},
+    {c:"Ultrasound",t:"2D Echo",p:2500,r:"Heart scan; pumping function"},
 
-        // Ultrasound
-        { cat: "Ultrasound", test: "Early OBS/Routine Scan", price: 1800, reason: "Early pregnancy scan; checks fetal heartbeat and viability." },
-        { cat: "Ultrasound", test: "Upper Abdomen / Pelvis / KUB", price: 1800, reason: "Checks specific organs (Liver/Kidney/Uterus); used for pain or stones." },
-        { cat: "Ultrasound", test: "Abdomen + Pelvis", price: 1800, reason: "Comprehensive scan of belly area; used for general abdominal pain or organ checks." },
-        { cat: "Ultrasound", test: "NT Scan (3-4 Month)", price: 2800, reason: "Nuchal Translucency; screens for Down Syndrome and chromosomal abnormalities." },
-        { cat: "Ultrasound", test: "Anomaly Scan (5th Month)", price: 3500, reason: "Detailed scan; checks baby's physical development and organs for defects." },
-        { cat: "Ultrasound", test: "Colour Doppler (Obstetric)", price: 3500, reason: "Checks blood flow to the baby; used in high-risk pregnancies." },
-        { cat: "Ultrasound", test: "Venous/Renal/Arterial Doppler", price: 3500, reason: "Checks blood flow in vessels; used for DVT (clots) or kidney artery stenosis." },
-        { cat: "Ultrasound", test: "Small Parts", price: 2500, reason: "High-frequency scan; used for lumps in breast, thyroid, or scrotum." },
-        { cat: "Ultrasound", test: "Sonomamography (Breast)", price: 2500, reason: "High-frequency scan; used for lumps in breast." },
-        { cat: "Ultrasound", test: "USG Thyroid / Neck", price: 2500, reason: "High-frequency scan; used for lumps in thyroid." },
-        { cat: "Ultrasound", test: "Follicular Study (Cycle)", price: 1500, reason: "Tracks egg release; used for fertility treatment planning (4 Times)." },
-        { cat: "Ultrasound", test: "Follicular Study (One Day)", price: 500, reason: "Tracks egg release; single session." },
-        { cat: "Ultrasound", test: "2D Echo / Fetal 2D Echo", price: 2500, reason: "Heart ultrasound; checks pumping function (adults) or heart defects (fetus)." },
-        { cat: "Ultrasound", test: "Fetal 2D Echo (Specific)", price: 4000, reason: "Detailed heart ultrasound for fetus." },
-        { cat: "Ultrasound", test: "USG Scrotum", price: 2500, reason: "Scan of scrotum; used for pain or lumps." },
-        { cat: "Ultrasound", test: "Scrotum Doppler Study", price: 3500, reason: "Checks blood flow in scrotum; used for torsion or varicocele." },
-        { cat: "Ultrasound", test: "B Scan", price: 3000, reason: "Detailed scan of eye or tissue; used when standard view is blocked (e.g., cataracts)." }
-    ];
+    // PATHOLOGY
+    {c:"Pathology",t:"CBC",p:250,r:"Basic blood profile; anemia, infection"},
+    {c:"Pathology",t:"Blood Group",p:250,r:"ABO/Rh typing; surgery/donation"},
+    {c:"Pathology",t:"ESR",p:100,r:"Inflammation marker; TB, autoimmune"},
+    {c:"Pathology",t:"Sugar (Fasting)",p:100,r:"Diabetes screen (Empty stomach)"},
+    {c:"Pathology",t:"Sugar (PP)",p:100,r:"Diabetes screen (After food)"},
+    {c:"Pathology",t:"HbA1c",p:500,r:"3-month average sugar; Diabetes monitoring"},
+    {c:"Pathology",t:"Creatinine",p:200,r:"Kidney function; filtration marker"},
+    {c:"Pathology",t:"Urea",p:200,r:"Kidney waste product level"},
+    {c:"Pathology",t:"Uric Acid",p:200,r:"Gout, joint pain, kidney stones"},
+    {c:"Pathology",t:"Cholesterol",p:200,r:"Total fat in blood"},
+    {c:"Pathology",t:"Lipid Profile",p:800,r:"Detailed heart risk (HDL/LDL/Triglycerides)"},
+    {c:"Pathology",t:"SGOT",p:200,r:"Liver enzyme; general damage marker"},
+    {c:"Pathology",t:"SGPT",p:200,r:"Liver enzyme; specific for liver health"},
+    {c:"Pathology",t:"Bilirubin",p:200,r:"Jaundice check (Yellow eyes/skin)"},
+    {c:"Pathology",t:"LFT",p:800,r:"Complete Liver panel"},
+    {c:"Pathology",t:"T3 T4 TSH",p:600,r:"Complete Thyroid Profile"},
+    {c:"Pathology",t:"Free TFT",p:1000,r:"Active thyroid hormone level"},
+    {c:"Pathology",t:"Calcium",p:200,r:"Bone strength; deficiency causes pain"},
+    {c:"Pathology",t:"Vit D3",p:1200,r:"Bone health; sun vitamin deficiency"},
+    {c:"Pathology",t:"Vit B12",p:1000,r:"Nerve health; fatigue, tingling"},
+    {c:"Pathology",t:"Iron Studies",p:700,r:"Detailed anemia check"},
+    {c:"Pathology",t:"Ferritin",p:800,r:"Iron storage levels"},
+    {c:"Pathology",t:"Electrolytes",p:600,r:"Sodium/Potassium; hydration & heart"},
+    {c:"Pathology",t:"Amylase",p:500,r:"Pancreatitis check"},
+    {c:"Pathology",t:"Lipase",p:500,r:"Pancreatitis check (Specific)"},
+    {c:"Pathology",t:"Dengue NS1",p:600,r:"Early Dengue fever (Day 1-3)"},
+    {c:"Pathology",t:"Dengue IgG/IgM",p:1200,r:"Late Dengue fever/Recovery"},
+    {c:"Pathology",t:"Malaria MP",p:300,r:"Malaria check (Microscope)"},
+    {c:"Pathology",t:"Malaria Antigen",p:700,r:"Malaria check (Rapid Kit)"},
+    {c:"Pathology",t:"Widal",p:300,r:"Typhoid fever test"},
+    {c:"Pathology",t:"Urine R/M",p:300,r:"UTI, kidney infection check"},
+    {c:"Pathology",t:"Urine Culture",p:1800,r:"Bacteria identification for UTI antibiotics"},
+    {c:"Pathology",t:"Stool R/M",p:250,r:"Worms, parasites, digestion check"},
+    {c:"Pathology",t:"HIV",p:400,r:"AIDS virus screening"},
+    {c:"Pathology",t:"HBsAg",p:800,r:"Hepatitis B screening"},
+    {c:"Pathology",t:"HCV",p:1000,r:"Hepatitis C screening"},
+    {c:"Pathology",t:"VDRL",p:300,r:"Syphilis screening"},
+    {c:"Pathology",t:"Troponin I",p:1200,r:"Heart attack confirmation"},
+    {c:"Pathology",t:"Troponin T",p:1800,r:"Heart attack confirmation"},
+    {c:"Pathology",t:"B-HCG",p:600,r:"Pregnancy confirmation (Blood)"},
+    {c:"Pathology",t:"FSH",p:500,r:"Fertility hormone (Follicle Stimulating)"},
+    {c:"Pathology",t:"LH",p:500,r:"Fertility hormone (Luteinizing)"},
+    {c:"Pathology",t:"Prolactin",p:500,r:"Milk hormone; irregular periods"},
+    {c:"Pathology",t:"AMH",p:2200,r:"Ovarian reserve (Egg count)"},
+    {c:"Pathology",t:"Semen Analysis",p:500,r:"Male fertility; sperm count"},
+    {c:"Pathology",t:"Dual Marker",p:2800,r:"Down Syndrome risk (1st Trimester)"},
+    {c:"Pathology",t:"Quadruple Marker",p:3000,r:"Down Syndrome risk (2nd Trimester)"},
+    {c:"Pathology",t:"PT-INR",p:500,r:"Clotting time (Warfarin patients)"},
+    {c:"Pathology",t:"APTT",p:600,r:"Clotting time (Heparin patients)"},
+    {c:"Pathology",t:"RA Factor",p:500,r:"Rheumatoid Arthritis check"},
+    {c:"Pathology",t:"Anti CCP",p:1400,r:"Early Arthritis check (Specific)"},
+    {c:"Pathology",t:"Ana Profile",p:5500,r:"Autoimmune disease check (Lupus)"},
+    {c:"ECG",t:"Electrocardiography",p:500,r:"Records heart rhythm; for chest pain"}
+];
 
-    // --- GAME STATE ---
-    let activeDb = [];
-    let currentQIndex = 0;
-    let score = 0;
-    let timerInterval;
-    let mistakeLog = [];
-    const QUESTION_LIMIT = 20;
-    const TIME_PER_QUESTION = 20; // Seconds
-
-    
-    document.getElementById('display-high-score').textContent = localStorage.getItem('carepointScore') || 0;
-
-    function startQuiz() {
-        const catFilter = document.getElementById('category-filter').value;
-        
-        // Filter DB based on selection
-        if (catFilter === 'All') {
-            activeDb = [...db];
-        } else {
-            activeDb = db.filter(item => item.cat === catFilter);
-        }
-
-        if (activeDb.length === 0) {
-            alert("No questions found for this category!");
-            return;
-        }
-
-        // Shuffle and limit
-        activeDb = shuffle(activeDb).slice(0, QUESTION_LIMIT);
-
-        // Reset State
-        score = 0;
-        currentQIndex = 0;
-        mistakeLog = [];
-        document.getElementById('score').textContent = '0';
-        document.getElementById('total-q').textContent = activeDb.length;
-        
-        // UI Switch
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('end-screen').style.display = 'none';
-        document.getElementById('quiz-screen').style.display = 'block';
-
-        loadQuestion();
+// --- PACKAGE SPECIAL QUESTIONS ---
+const pkgQuestions = [
+    {
+        q: "What is the <b>Offer Price</b> of the Full Body Checkup?",
+        a: "₹1500/-",
+        f: ["₹4000/-", "₹2500/-", "₹1200/-"]
+    },
+    {
+        q: "What is the <b>MRP</b> of the Full Body Checkup (without discount)?",
+        a: "₹4000/-",
+        f: ["₹1500/-", "₹3000/-", "₹5500/-"]
+    },
+    {
+        q: "Which <b>Vitamins</b> are included in the Full Body Checkup?",
+        a: "Vit B12 & Vit D3",
+        f: ["Vit C & Vit A", "Vit D3 only", "No Vitamins included"]
+    },
+    {
+        q: "Does the Full Body Checkup include <b>Ultrasound (USG)</b>?",
+        a: "No",
+        f: ["Yes, Whole Abdomen", "Yes, KUB only", "Yes, Pelvis only"]
+    },
+    {
+        q: "Which cardiac test is included in the Full Body Checkup?",
+        a: "ECG",
+        f: ["2D Echo", "Troponin I", "Stress Test"]
+    },
+    {
+        q: "Does the package include <b>HbA1c</b> (3-month sugar)?",
+        a: "Yes",
+        f: ["No, only Fasting Sugar", "No, only Urine Sugar", "No"]
+    },
+    {
+        q: "Which Kidney Function tests are included?",
+        a: "Urea, Creatinine, Uric Acid, Calcium",
+        f: ["Creatinine only", "Urea & Electrolytes only", "None"]
+    },
+    {
+        q: "Does the package include <b>Thyroid (TSH)</b> testing?",
+        a: "Yes",
+        f: ["No", "Only T3 & T4", "Only if requested"]
     }
+];
 
-    function loadQuestion() {
-        if (currentQIndex >= activeDb.length) {
-            endQuiz();
-            return;
-        }
+// --- GAME LOGIC ---
+let state = { q:[], idx:0, score:0, mistakes:[] };
+let timer;
 
-        const item = activeDb[currentQIndex];
-        document.getElementById('q-number').textContent = currentQIndex + 1;
-        document.getElementById('feedback').innerHTML = '';
-        document.getElementById('next-btn').style.display = 'none';
+function startQuiz() {
+    let cat = document.getElementById('cat-filter').value;
+    state.q = [];
+
+    // 1. Add Regular Database Questions
+    if (cat !== 'Packages') {
+        let pool = cat === 'All' ? db : db.filter(x => x.c === cat);
         
-        // Generate Question Type
-        // 0: Price, 1: Significance, 2: Reverse Sig
-        let possibleTypes = [0];
-        if (item.reason) { possibleTypes.push(1, 2); }
-        let type = possibleTypes[Math.floor(Math.random() * possibleTypes.length)];
-
-        let qText = '', correctVal = '', distractorType = '';
-        
-        if (type === 0) {
-            qText = `Price of <span style='color:#007bff'>${item.test}</span>?`;
-            correctVal = `₹${item.price}`;
-            distractorType = 'price';
-        } else if (type === 1) {
-            qText = `Significance of <span style='color:#007bff'>${item.test}</span>?`;
-            correctVal = item.reason;
-            distractorType = 'reason';
-        } else {
-            qText = `Which test matches: <br><em>"${item.reason}"</em>?`;
-            correctVal = item.test;
-            distractorType = 'test';
-        }
-
-        document.getElementById('question-text').innerHTML = qText;
-
-    
-        let opts = generateDistractors(correctVal, distractorType, item);
-        opts.push(correctVal);
-        opts = shuffle(opts);
-
-        const grid = document.getElementById('options-grid');
-        grid.innerHTML = '';
-        
-        opts.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerHTML = opt;
-            btn.onclick = () => handleAnswer(btn, opt, correctVal, qText);
-            grid.appendChild(btn);
-        });
-
-        startTimer();
-    }
-
-    function handleAnswer(btn, selected, correct, questionTitle) {
-        clearInterval(timerInterval);
-        const allBtns = document.querySelectorAll('.option-btn');
-        allBtns.forEach(b => b.disabled = true); // Lock buttons
-
-        if (selected === correct) {
-            btn.classList.add('correct');
-            score++;
-            document.getElementById('score').textContent = score;
-            document.getElementById('feedback').innerHTML = '<span style="color:green">Correct!</span>';
-        } else {
-            btn.classList.add('wrong');
-            
-            allBtns.forEach(b => {
-                if (b.innerHTML === correct) b.classList.add('correct');
+        pool.forEach(item => {
+            // Price Question
+            state.q.push({ 
+                type: 'price', 
+                txt: `What is the price of <br><span style='color:var(--primary)'>${item.t}</span>?`, 
+                ans: `₹${item.p}` 
             });
-            document.getElementById('feedback').innerHTML = '<span style="color:red">Wrong!</span>';
             
-            
-            mistakeLog.push({ q: questionTitle, user: selected, real: correct });
-        }
-
-        document.getElementById('next-btn').style.display = 'block';
+            // Reason & Reverse Questions
+            if(item.r) {
+                state.q.push({ 
+                    type: 'reason', 
+                    txt: `What is the significance of <br><span style='color:var(--primary)'>${item.t}</span>?`, 
+                    ans: item.r 
+                });
+                state.q.push({ 
+                    type: 'rev', 
+                    txt: `Which test is used for:<br><i>"${item.r.substring(0, 50)}..."</i>?`, 
+                    ans: item.t 
+                });
+            }
+        });
     }
 
-    function generateDistractors(correct, type, currentItem) {
-        let set = new Set();
-        let max = 50;
-        while(set.size < 3 && max > 0) {
-            let r = db[Math.floor(Math.random() * db.length)];
-            let val;
-            if (type === 'price') val = `₹${r.price}`;
-            else if (type === 'reason') val = r.reason;
-            else val = r.test;
+    // 2. Add Package Questions
+    if (cat === 'All' || cat === 'Packages') {
+        pkgQuestions.forEach(pq => {
+            state.q.push({ type: 'pkg', txt: pq.q, ans: pq.a, f: pq.f });
+        });
+    }
 
-            if (val && val !== correct && val !== "null") set.add(val);
+    if(!state.q.length) return alert("No questions found.");
+    
+    // Shuffle
+    state.q.sort(() => Math.random() - 0.5);
+    
+    // Reset State
+    state.idx = 0; state.score = 0; state.mistakes = [];
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'flex'; // Changed to flex for proper column layout
+    document.getElementById('q-total').innerText = state.q.length;
+    
+    showQ();
+}
+
+function showQ() {
+    if(state.idx >= state.q.length) return end();
+    
+    let q = state.q[state.idx];
+    document.getElementById('q-num').innerText = state.idx + 1;
+    document.getElementById('question').innerHTML = q.txt;
+    document.getElementById('score').innerText = state.score;
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('next-btn').style.display = 'none';
+
+    // Options Logic
+    let opts = new Set();
+    opts.add(q.ans);
+
+    if (q.type === 'pkg') {
+        q.f.forEach(f => opts.add(f));
+    } else {
+        let max = 50;
+        while(opts.size < 4 && max > 0) {
+            let r = db[Math.floor(Math.random() * db.length)];
+            if(q.type === 'price') opts.add(`₹${r.p}`);
+            else if(q.type === 'reason') opts.add(r.r || "General checkup");
+            else opts.add(r.t);
             max--;
         }
-        
-        if (set.size < 3) {
-             if (type === 'price') set.add('₹100').add('₹5000').add('₹1500');
-             else set.add('Routine Checkup').add('Infection Check').add('Bone Scan');
-        }
-        return Array.from(set);
-    }
-
-    function startTimer() {
-        clearInterval(timerInterval);
-        let timeLeft = TIME_PER_QUESTION;
-        const bar = document.getElementById('timer-fill');
-        bar.style.width = '100%';
-        bar.style.backgroundColor = '#ffc107';
-
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            let percent = (timeLeft / TIME_PER_QUESTION) * 100;
-            bar.style.width = percent + '%';
-            
-            if (timeLeft <= 5) bar.style.backgroundColor = '#dc3545'; // Red alert
-
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                handleTimeout();
-            }
-        }, 1000);
-    }
-
-    function handleTimeout() {
-        const allBtns = document.querySelectorAll('.option-btn');
-        allBtns.forEach(b => b.disabled = true);
-        document.getElementById('feedback').innerHTML = '<span style="color:red">Time Up!</span>';
-        document.getElementById('next-btn').style.display = 'block';
-        
-        // Add to mistakes as "Time Out"
-        const qText = document.getElementById('question-text').innerHTML;
-        mistakeLog.push({ q: qText, user: "Time Out", real: "See Quiz" });
-    }
-
-    function nextQuestion() {
-        currentQIndex++;
-        loadQuestion();
-    }
-
-    function endQuiz() {
-        document.getElementById('quiz-screen').style.display = 'none';
-        document.getElementById('end-screen').style.display = 'block';
-        document.getElementById('final-score').textContent = score;
-        document.getElementById('final-total').textContent = activeDb.length;
-
-        
-        const oldHigh = localStorage.getItem('carepointScore') || 0;
-        if (score > oldHigh) {
-            localStorage.setItem('carepointScore', score);
-            alert("New High Score!");
-        }
-
-        
-        const container = document.getElementById('mistakes-container');
-        const list = document.getElementById('mistake-list');
-        list.innerHTML = '';
-        
-        if (mistakeLog.length > 0) {
-            container.style.display = 'block';
-            mistakeLog.forEach(m => {
-                const div = document.createElement('div');
-                div.className = 'mistake-item';
-                div.innerHTML = `<strong>Q:</strong> ${m.q}<br>
-                                 <span style="color:red">You: ${m.user}</span> <br>
-                                 <span style="color:green">Correct: ${m.real}</span>`;
-                list.appendChild(div);
-            });
-        } else {
-            container.style.display = 'none';
+        if(opts.size < 4) {
+            if(q.type === 'price') opts.add("₹1500").add("₹5000");
+            else opts.add("Routine Check").add("Viral Infection");
         }
     }
 
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
+    let box = document.getElementById('options');
+    box.innerHTML = '';
+    
+    Array.from(opts).sort(() => Math.random() - 0.5).forEach(o => {
+        let btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = o;
+        btn.onclick = () => check(btn, o, q);
+        box.appendChild(btn);
+    });
+
+    startTimer();
+}
+
+function startTimer() {
+    clearInterval(timer);
+    let t = 15;
+    let bar = document.getElementById('timer');
+    bar.style.width = '100%';
+    bar.style.backgroundColor = '#ffc107';
+
+    timer = setInterval(() => {
+        t--;
+        bar.style.width = (t/15*100) + '%';
+        if(t < 5) bar.style.backgroundColor = '#dc3545';
+        if(t <= 0) { clearInterval(timer); check(null, null, state.q[state.idx]); }
+    }, 1000);
+}
+
+function check(btn, sel, q) {
+    clearInterval(timer);
+    document.querySelectorAll('.option-btn').forEach(b => {
+        b.disabled = true;
+        if(b.innerHTML === q.ans) b.classList.add('correct');
+    });
+
+    if(sel === q.ans) {
+        state.score++;
+        document.getElementById('feedback').innerHTML = '<span style="color:green">Correct!</span>';
+    } else {
+        if(btn) btn.classList.add('wrong');
+        document.getElementById('feedback').innerHTML = '<span style="color:red">Wrong!</span>';
+        let txt = q.txt.replace(/<[^>]*>/g, '');
+        state.mistakes.push(`<b>Q:</b> ${txt}<br><b>Ans:</b> ${q.ans}`);
     }
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() { state.idx++; showQ(); }
+
+function end() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'flex'; // Flex for layout
+    document.getElementById('final-score').innerText = `${state.score} / ${state.q.length}`;
+    
+    let mBox = document.getElementById('mistakes');
+    if(state.mistakes.length) {
+        mBox.style.display = 'block';
+        mBox.innerHTML = '<h3>Review Mistakes:</h3>' + state.mistakes.map(m => `<div style="border-bottom:1px solid #ddd; padding:10px 0;">${m}</div>`).join('');
+    } else {
+        mBox.style.display = 'none';
+    }
+}
 </script>
-
 </body>
 </html>
