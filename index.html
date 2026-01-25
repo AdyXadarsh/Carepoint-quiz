@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Carepoint Diagnostic Quiz</title>
+    <title>CareJoint Diagnostic Quiz</title>
     <style>
         :root { 
             --primary: #007bff; 
@@ -197,14 +197,14 @@
 <div class="container">
     
     <div id="start-screen">
-        <h1>Carepoint Quiz</h1>
+        <h1>Carejoint Quiz</h1>
         <p class="subtitle">Price, Significance & Package Master</p>
         
         <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
             <div class="input-group">
                 <span class="input-label">Select Topic:</span>
                 <select id="cat-filter">
-                    <option value="All">All Sections (Exam Mode)</option>
+                    <option value="All">All Sections</option>
                     <option value="Packages">📦 Full Body Package (New)</option>
                     <option value="Pathology">Pathology</option>
                     <option value="X-Ray">X-Ray</option>
@@ -216,15 +216,15 @@
             <div class="input-group">
                 <span class="input-label">Number of Questions:</span>
                 <select id="limit-filter">
-                    <option value="10">Short (10 Questions)</option>
-                    <option value="25" selected>Medium (25 Questions)</option>
-                    <option value="50">Long (50 Questions)</option>
-                    <option value="9999">Full Exam (All Questions)</option>
+                    <option value="10">10 Questions</option>
+                    <option value="25" selected>25 Questions</option>
+                    <option value="50">50 Questions</option>
+                    <option value="9999">All Questions</option>
                 </select>
             </div>
         </div>
         
-        <button class="main-btn" onclick="startQuiz()">Start Training</button>
+        <button class="main-btn" onclick="startQuiz()">Unleash the hell</button>
     </div>
 
     <div id="quiz-screen">
@@ -245,7 +245,7 @@
     </div>
 
     <div id="end-screen">
-        <h1>Training Complete!</h1>
+        <h1>Congratulations for surviving!</h1>
         <p style="font-size:1.3rem; color:#444; margin: 10px 0; flex-shrink:0;">
             Final Score: <strong style="color:var(--primary)" id="final-score">0</strong>
         </p>
@@ -355,7 +355,7 @@ const db = [
     {c:"ECG",t:"Electrocardiography",p:500,r:"Records heart rhythm; for chest pain"}
 ];
 
-// --- PACKAGE SPECIAL QUESTIONS ---
+// --- PACKAGE SPECIAL QUESTIONS (EXPANDED) ---
 const pkgQuestions = [
     {
         q: "What is the <b>Offer Price</b> of the Full Body Checkup?",
@@ -384,18 +384,78 @@ const pkgQuestions = [
     },
     {
         q: "Does the package include <b>HbA1c</b> (3-month sugar)?",
-        a: "Yes",
+        a: "Yes, Glycosylated Hb",
         f: ["No, only Fasting Sugar", "No, only Urine Sugar", "No"]
     },
     {
-        q: "Which Kidney Function tests are included?",
-        a: "Urea, Creatinine, Uric Acid, Calcium",
+        q: "Which specific Kidney Function (KFT) tests are included?",
+        a: "Urea, Creatinine, BUN, Uric Acid",
         f: ["Creatinine only", "Urea & Electrolytes only", "None"]
     },
     {
-        q: "Does the package include <b>Thyroid (TSH)</b> testing?",
+        q: "Does the package include <b>Thyroid Profile</b>?",
+        a: "Only TSH (Thyroid)",
+        f: ["Yes, T3 T4 TSH", "No Thyroid tests", "Only T3 & T4"]
+    },
+    {
+        q: "Is <b>Calcium</b> included in the Full Body Checkup?",
         a: "Yes",
-        f: ["No", "Only T3 & T4", "Only if requested"]
+        f: ["No", "Only if requested", "Only with Vitamin D3"]
+    },
+    {
+        q: "Which Lipid Profile components are included?",
+        a: "Cholesterol, Triglycerides, HDL, LDL, VLDL",
+        f: ["Only Total Cholesterol", "Only HDL & LDL", "Cholesterol & Triglycerides only"]
+    },
+    {
+        q: "Is <b>Urine R/M</b> included in the package?",
+        a: "Yes",
+        f: ["No", "Only Urine Culture", "Only Urine Sugar"]
+    },
+    {
+        q: "Which Liver enzymes are tested in this package?",
+        a: "SGOT (AST) & SGPT (ALT)",
+        f: ["Only SGOT", "Only SGPT", "None"]
+    },
+    {
+        q: "Is <b>Total Protein & Albumin</b> included?",
+        a: "Yes, along with Globulin & A/G Ratio",
+        f: ["No", "Only Total Protein", "Only Albumin"]
+    },
+    {
+        q: "What is the full form of <b>LFT</b> mentioned in the package?",
+        a: "Liver Function Test",
+        f: ["Lung Function Test", "Lipid Function Test", "Liquid Filtration Test"]
+    },
+    {
+        q: "Does the package include <b>Risk Factors</b> analysis?",
+        a: "Yes",
+        f: ["No", "Only if requested", "Only for heart patients"]
+    },
+    {
+        q: "Is <b>BUN</b> (Blood Urea Nitrogen) included?",
+        a: "Yes",
+        f: ["No", "Only Urea", "Only Creatinine"]
+    },
+    {
+        q: "Is <b>BSF / PP (Sugar)</b> included?",
+        a: "Yes",
+        f: ["No, only Random Sugar", "No, only HbA1c", "No"]
+    },
+    {
+        q: "Does the package include <b>ESR</b>?",
+        a: "Yes",
+        f: ["No", "Only CBC", "Only Platelet Count"]
+    },
+    {
+        q: "Is <b>S. Bilirubin</b> (Total, Direct, Indirect) included?",
+        a: "Yes",
+        f: ["No", "Only Total Bilirubin", "Only Direct Bilirubin"]
+    },
+    {
+        q: "Does the package include <b>S. Alkaline Phosphatase</b>?",
+        a: "Yes",
+        f: ["No", "Only Acid Phosphatase", "Only if requested"]
     }
 ];
 
@@ -509,7 +569,7 @@ function showQ() {
 
 function startTimer() {
     clearInterval(timer);
-    let t = 15;
+    let t = 20;
     let bar = document.getElementById('timer');
     bar.style.width = '100%';
     bar.style.backgroundColor = '#ffc107';
