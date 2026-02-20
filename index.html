@@ -3,618 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CareJoint Diagnostic Quiz</title>
+    <title>Care Point Master Training</title>
     <style>
-        :root { 
-            --primary: #007bff; 
-            --success: #28a745; 
-            --danger: #dc3545; 
-            --light: #f8f9fa; 
-            --dark: #343a40; 
-            --warning: #ffc107; 
-            --bg: #e9ecef;
-        }
-
-        body { 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center;
-            height: 100vh; /* Fixed height for app-like feel */
-            padding: 15px;
-            box-sizing: border-box;
-            overflow: hidden; /* Prevent body scroll */
-        }
-
-        .container { 
-            background: white; 
-            padding: 1.5rem; 
-            border-radius: 16px; 
-            width: 100%; 
-            max-width: 500px; 
-            text-align: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-            display: flex;
-            flex-direction: column;
-            height: 90vh; /* Fixed container height */
-            max-height: 800px;
-            position: relative;
-            overflow: hidden; 
-        }
-
-        /* --- Header & Stats --- */
-        h1 { color: var(--primary); margin: 0 0 5px 0; font-size: 1.6rem; flex-shrink: 0; }
-        .subtitle { color: #6c757d; margin-bottom: 15px; font-size: 0.9rem; flex-shrink: 0; }
-
-        .stats-bar { 
-            display: flex; 
-            justify-content: space-between; 
-            font-weight: 700; 
-            color: #555; 
-            margin-bottom: 10px; 
-            font-size: 0.9rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
-            flex-shrink: 0;
-        }
-
-        /* --- Timer --- */
-        .timer-track { 
-            height: 6px; 
-            background: #eee; 
-            border-radius: 3px; 
-            overflow: hidden; 
-            margin-bottom: 15px; 
-            flex-shrink: 0;
-        }
-        .timer-fill { 
-            height: 100%; 
-            background: var(--warning); 
-            width: 100%; 
-            transition: width 1s linear; 
-        }
-
-        /* --- Question Box --- */
-        .question-box {
-            min-height: 90px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--dark);
-            line-height: 1.35;
-            padding: 0 5px;
-            flex-shrink: 0;
-        }
-
-        /* --- Scrollable Areas --- */
-        #options, #mistakes {
-            overflow-y: auto;
-            flex-grow: 1; /* Takes all available space */
-            padding-right: 5px;
-            -webkit-overflow-scrolling: touch; 
-            overscroll-behavior: contain; 
-        }
-
-        /* Mistake List Specifics */
-        #mistakes {
-            text-align: left;
-            border: 1px solid #eee;
-            padding: 10px;
-            margin: 10px 0; /* Margin around list, not button */
-            border-radius: 10px;
-            background: #fcfcfc;
-            font-size: 0.9rem;
-        }
-
-        /* --- Buttons --- */
-        .option-btn { 
-            background: white; 
-            border: 2px solid #e9ecef; 
-            padding: 14px 10px; 
-            border-radius: 12px; 
-            width: 100%; 
-            margin-bottom: 10px; 
-            cursor: pointer; 
-            font-size: 1rem; 
-            transition: all 0.2s ease; 
-            font-weight: 500; 
-            color: #444;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .option-btn:hover:not(:disabled) { 
-            border-color: var(--primary); 
-            background: #f8faff; 
-            transform: translateY(-1px);
-        }
-
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #22c55e; --danger: #ef4444; --bg: #f8fafc; }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; padding: 10px; box-sizing: border-box; overflow: hidden; }
+        .container { background: white; padding: 1.5rem; border-radius: 24px; width: 100%; max-width: 550px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.1); display: flex; flex-direction: column; height: 96vh; position: relative; }
+        h1 { color: var(--primary); margin: 0; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; }
+        .subtitle { color: var(--accent); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 15px; }
+        .stats-bar { display: flex; justify-content: space-between; font-weight: 800; color: #64748b; font-size: 0.7rem; margin-bottom: 8px; }
+        .timer-track { height: 4px; background: #e2e8f0; border-radius: 2px; margin-bottom: 15px; }
+        .timer-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+        .question-box { min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; text-align: center; }
+        .q-label { font-size: 0.65rem; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; }
+        .q-text { font-size: 1.1rem; font-weight: 700; color: var(--primary); line-height: 1.4; }
+        #options { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+        .option-btn { background: white; border: 2px solid #e2e8f0; padding: 12px; border-radius: 14px; width: 100%; margin-bottom: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #334155; transition: 0.2s; text-align: left; }
+        .option-btn:hover { border-color: var(--accent); background: #f0f7ff; }
         .option-btn.correct { background: var(--success); color: white; border-color: var(--success); }
         .option-btn.wrong { background: var(--danger); color: white; border-color: var(--danger); }
-        
-        .main-btn { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 50px; 
-            font-size: 1.1rem; 
-            font-weight: bold;
-            cursor: pointer; 
-            width: 100%; 
-            margin-top: auto; /* Pushes to bottom if flex container */
-            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
-            transition: transform 0.1s;
-            flex-shrink: 0; /* Never shrink */
-        }
-        .main-btn:active { transform: scale(0.96); }
-
-        /* --- Inputs --- */
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .input-label {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #555;
-            margin-left: 5px;
-            margin-bottom: 5px;
-            display: block;
-        }
-        select { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 10px; 
-            border: 2px solid #eee; 
-            font-size: 1rem; 
-            background-color: #fff;
-            cursor: pointer;
-        }
-
-        /* --- Screens --- */
-        #quiz-screen, #end-screen { 
-            display: none; 
-            height: 100%; 
-            flex-direction: column; 
-        }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-
+        .main-btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 16px; font-size: 0.9rem; font-weight: 800; cursor: pointer; width: 100%; text-transform: uppercase; }
+        #mistakes { text-align: left; border: 1px solid #e2e8f0; padding: 12px; margin: 10px 0; border-radius: 16px; background: #f8fafc; font-size: 0.8rem; overflow-y: auto; }
+        .input-group { margin-bottom: 10px; text-align: left; }
+        .input-label { font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 4px; display: block; text-transform: uppercase; }
+        select { width: 100%; padding: 10px; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 600; background: white; }
+        #quiz-screen, #end-screen { display: none; height: 100%; flex-direction: column; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    
     <div id="start-screen">
-        <h1>Carejoint Quiz</h1>
-        <p class="subtitle">Price, Significance & Package Master</p>
-        
+        <h1>Care Point Diagnostics</h1>
+        <p class="subtitle">Dombivli Branch Master Inventory</p>
         <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
-            <div class="input-group">
-                <span class="input-label">Select Topic:</span>
-                <select id="cat-filter">
-                    <option value="All">All Sections</option>
-                    <option value="Packages">📦 Full Body Package (New)</option>
-                    <option value="Pathology">Pathology</option>
-                    <option value="X-Ray">X-Ray</option>
-                    <option value="Ultrasound">Ultrasound</option>
-                    <option value="Special Studies">Special Studies</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <span class="input-label">Number of Questions:</span>
-                <select id="limit-filter">
-                    <option value="10">10 Questions</option>
-                    <option value="25" selected>25 Questions</option>
-                    <option value="50">50 Questions</option>
-                    <option value="9999">All Questions</option>
-                </select>
-            </div>
+            <div class="input-group"><span class="input-label">Select Department:</span><select id="cat-filter"><option value="all">Full Database (Packages & Tests)</option><option value="Package">Health Packages</option><option value="Pathology">Pathology Tests</option><option value="Ultrasound">Sonography / USG</option><option value="X-Ray">Radiology (X-Ray)</option><option value="Special">Special Studies / ECG</option></select></div>
+            <div class="input-group"><span class="input-label">Exam Length:</span><select id="limit-filter"><option value="25" selected>Standard (25 Questions)</option><option value="50">Manager (50 Questions)</option><option value="100">Pro (100 Questions)</option><option value="999">The Whole List</option></select></div>
         </div>
-        
-        <button class="main-btn" onclick="startQuiz()">Unleash the hell</button>
+        <button class="main-btn" onclick="startQuiz()">Initialize Assessment</button>
     </div>
 
     <div id="quiz-screen">
-        <div class="stats-bar">
-            <span>Score: <span id="score">0</span></span>
-            <span>Q: <span id="q-num">1</span> / <span id="q-total">0</span></span>
-        </div>
-        
+        <div class="stats-bar"><span>SCORE: <span id="score">0</span></span><span>Q: <span id="q-num">1</span>/<span id="q-total">0</span></span></div>
         <div class="timer-track"><div class="timer-fill" id="timer"></div></div>
-        
-        <div class="question-box" id="question">Loading...</div>
-        
+        <div class="question-box"><div id="q-cat" class="q-label"></div><div id="q-text" class="q-text"></div></div>
         <div id="options"></div>
-        
-        <div id="feedback" style="height:20px; font-weight:bold; margin-top:5px; font-size:0.9rem; flex-shrink:0;"></div>
-        
-        <button id="next-btn" class="main-btn" style="display:none;" onclick="nextQuestion()">Next Question</button>
+        <div id="feedback" style="height:20px; font-weight:900; margin-top:5px; text-align:center;"></div>
+        <button id="next-btn" class="main-btn" style="display:none; margin-top:10px;" onclick="nextQuestion()">Next Item</button>
     </div>
 
     <div id="end-screen">
-        <h1>Congratulations for surviving!</h1>
-        <p style="font-size:1.3rem; color:#444; margin: 10px 0; flex-shrink:0;">
-            Final Score: <strong style="color:var(--primary)" id="final-score">0</strong>
-        </p>
-        
+        <h1>Assessment Report</h1>
+        <p style="font-size:2rem; font-weight:900; margin: 10px 0;"><span id="final-score" style="color:var(--accent)"></span></p>
         <div id="mistakes"></div>
-        
-        <button class="main-btn" onclick="location.reload()">Restart Quiz</button>
+        <button class="main-btn" onclick="location.reload()">Restart Training</button>
     </div>
-
 </div>
 
 <script>
-// --- MAIN DATABASE ---
-const db = [
-    // X-RAY
-    {c:"X-Ray",t:"Chest PA",p:500,r:"Checks lungs/heart; for cough, pneumonia, TB"},
-    {c:"X-Ray",t:"C Spine AP/LAT",p:900,r:"Neck vertebrae; for neck pain, trauma, spondylosis"},
-    {c:"X-Ray",t:"L Spine AP/LAT",p:900,r:"Lower back vertebrae; for slip disc, sciatica"},
-    {c:"X-Ray",t:"Dorsal Spine AP/LAT",p:900,r:"Mid-back; for posture issues, trauma"},
-    {c:"X-Ray",t:"Hand AP/LAT",p:900,r:"Orthopedic; fractures, arthritis in hand"},
-    {c:"X-Ray",t:"Elbow AP/LAT",p:900,r:"Orthopedic; fractures, dislocation in elbow"},
-    {c:"X-Ray",t:"Wrist AP/LAT",p:900,r:"Orthopedic; fractures, arthritis in wrist"},
-    {c:"X-Ray",t:"Foot AP/LAT",p:900,r:"Orthopedic; fractures in foot"},
-    {c:"X-Ray",t:"Ankle AP/LAT",p:900,r:"Orthopedic; sprains, fractures in ankle"},
-    {c:"X-Ray",t:"Knee AP/LAT",p:900,r:"Orthopedic; arthritis, gaps in knee joint"},
-    {c:"X-Ray",t:"Leg AP/LAT",p:900,r:"Orthopedic; fractures in tibia/fibula"},
-    {c:"X-Ray",t:"Skull AP/LAT",p:900,r:"Head trauma, bony abnormalities"},
-    {c:"X-Ray",t:"PNS (Sinus)",p:900,r:"Sinusitis, headache, blockage"},
-    {c:"X-Ray",t:"IVP",p:3000,r:"Kidney dye test; stones, urinary blockage"},
+const database = [
+    // --- HEALTH PACKAGES ---
+    {c:"Package",n:"Body Profile (Basic)",p:2999,r:"Includes CBC, ESR, Diabetic/Renal/Lipid Profiles, Urine, USG AB+P, ECG, X-Ray Chest, 2D Echo, BP."},
+    {c:"Package",n:"Body Profile (Extended)",p:2199,r:"Includes Liver/Renal/Lipid Profiles, Vitamins D3/B12, Thyroid, HIV/HCV/HBSAG/VDRL, ECG, X-Ray Chest."},
+    {c:"Package",n:"Winter Package",p:2999,r:"Includes Testosterone, Lipid, Vit D3/B12, Liver/Renal, Iron Studies, Sugar Profile, X-Ray Chest, Thyroid, ECG."},
+    {c:"Package",n:"Fever Profile",p:599,r:"Primary screening: CBC, ESR, Malaria Parasite, Widal, and Chest X-Ray."},
+    {c:"Package",n:"Male Advance",p:6999,r:"Premium male wellness: PSA Total, HbA1c, Vit D3/B12, 2D Echo, USG, ECG, Chest X-Ray, and full panels."},
+    {c:"Package",n:"Woman Advance",p:6999,r:"Premium female wellness: Hormonal (FSH/LH/Prolactin), Estradiol, Anti CCP, 2D Echo, USG, ECG, Chest X-Ray."},
+    {c:"Package",n:"Cardiac Profile",p:3999,r:"Specialized heart check: CPK-MB, Troponin I, Troponin T, NT-PROBNP, ECG, X-Ray Chest."},
+    {c:"Package",n:"Cancer Profile",p:3799,r:"Early tumor screen: PSA Total/Free, CA 125, CA 19.9, Procalcitonin, Calcium."},
 
-    // SPECIAL STUDIES
-    {c:"Special Studies",t:"FNAC",p:4500,r:"Biopsy of lumps (breast/thyroid) for cancer"},
-    {c:"Special Studies",t:"Barium Swallow",p:2000,r:"Esophagus X-ray; difficulty swallowing"},
-    {c:"Special Studies",t:"Barium Meal",p:3500,r:"Stomach/Intestine X-ray; ulcers, digestive issues"},
-    {c:"Special Studies",t:"HSG",p:4500,r:"Uterus/Tube check; infertility, blocked tubes"},
+    // --- RADIOLOGY (X-RAY) ---
+    {c:"X-Ray",n:"Chest PA",p:500,r:"Checks lungs and heart; cough, chest pain, pneumonia, or TB screening."},
+    {c:"X-Ray",n:"C Spine AP/LAT",p:900,r:"Neck imaging; trauma or spondylosis."},
+    {c:"X-Ray",n:"L Spine AP/LAT",p:900,r:"Lower back; slip disc or sciatica."},
+    {c:"X-Ray",n:"Dorsal (Thoracic) AP/LAT",p:900,r:"Mid-back imaging."},
+    {c:"X-Ray",n:"Hand AP/LAT",p:900,r:"Orthopedic imaging for bones/joints."},
+    {c:"X-Ray",n:"Elbow AP/LAT",p:900,r:"Orthopedic imaging for bones/joints."},
+    {c:"X-Ray",n:"Wrist AP/LAT",p:900,r:"Orthopedic imaging for bones/joints."},
+    {c:"X-Ray",n:"Foot AP/LAT",p:900,r:"Orthopedic imaging for bones/joints."},
+    {c:"X-Ray",n:"Ankle AP/LAT",p:900,r:"Orthopedic imaging for bones/joints."},
+    {c:"X-Ray",n:"Knee AP/LAT",p:900,r:"Orthopedic imaging for bones/joints."},
+    {c:"X-Ray",n:"Leg AP/LAT",p:900,r:"Orthopedic imaging for bones/joints."},
+    {c:"X-Ray",n:"Skull AP/LAT",p:900,r:"Head trauma or bony abnormalities."},
+    {c:"X-Ray",n:"PNS",p:900,r:"Sinuses; chronic sinusitis or headache."},
+    {c:"X-Ray",n:"IVP",p:3000,r:"Kidney stones/urinary tract blockages."},
 
-    // ULTRASOUND
-    {c:"Ultrasound",t:"Early OBS",p:1800,r:"Early pregnancy; heartbeat & viability"},
-    {c:"Ultrasound",t:"Upper Abdomen",p:1800,r:"Liver, Gallbladder, Pancreas check"},
-    {c:"Ultrasound",t:"Pelvis",p:1800,r:"Uterus, Ovaries, Bladder check"},
-    {c:"Ultrasound",t:"KUB",p:1800,r:"Kidney, Ureter, Bladder; stones/pain"},
-    {c:"Ultrasound",t:"Abdomen + Pelvis",p:1800,r:"Full belly scan; general pain check"},
-    {c:"Ultrasound",t:"NT Scan",p:2800,r:"3-4 Month pregnancy; Down Syndrome screen"},
-    {c:"Ultrasound",t:"Anomaly Scan",p:3500,r:"5th Month; detailed baby organ check"},
-    {c:"Ultrasound",t:"Obstetric Doppler",p:3500,r:"Blood flow to baby; high-risk pregnancy"},
-    {c:"Ultrasound",t:"Renal Doppler",p:3500,r:"Kidney blood flow; hypertension check"},
-    {c:"Ultrasound",t:"Venous Doppler",p:3500,r:"Leg veins; DVT (clots) check"},
-    {c:"Ultrasound",t:"Sonomamography",p:2500,r:"Breast ultrasound; lumps/cancer check"},
-    {c:"Ultrasound",t:"USG Thyroid",p:2500,r:"Neck ultrasound; thyroid lumps"},
-    {c:"Ultrasound",t:"USG Scrotum",p:2500,r:"Testicle scan; pain or swelling"},
-    {c:"Ultrasound",t:"Follicular Study",p:1500,r:"Tracking egg release (4 sessions)"},
-    {c:"Ultrasound",t:"2D Echo",p:2500,r:"Heart scan; pumping function"},
+    // --- SONOGRAPHY (ULTRASOUND) ---
+    {c:"Ultrasound",n:"Early OBS Scan",p:1800,r:"Heartbeat and viability in early pregnancy."},
+    {c:"Ultrasound",n:"Upper Abdomen / KUB",p:1800,r:"Stones or organ pain (Kidney/Ureter/Bladder)."},
+    {c:"Ultrasound",n:"Abdomen + Pelvis",p:1800,r:"Comprehensive belly scan."},
+    {c:"Ultrasound",n:"NT Scan (3-4 Month)",p:2800,r:"Chromosomal screening (Down Syndrome)."},
+    {c:"Ultrasound",n:"Anomaly Scan",p:3500,r:"Detailed baby physical development check."},
+    {c:"Ultrasound",n:"Colour Doppler (OBS)",p:3500,r:"High-risk pregnancy flow check."},
+    {c:"Ultrasound",n:"Doppler (V/R/A)",p:3500,r:"Blood vessel flow check."},
+    {c:"Ultrasound",n:"Small Parts",p:2500,r:"Lumps in Breast, Thyroid, or Scrotum."},
+    {c:"Ultrasound",n:"Follicular Study",p:1500,r:"Egg release tracking."},
+    {c:"Ultrasound",n:"2D Echo",p:2500,r:"Heart pumping and structural scan."},
+    {c:"Ultrasound",n:"Fetal 2D Echo",p:4000,r:"Baby heart defect scan."},
+    {c:"Ultrasound",n:"USG Scrotum",p:2500,r:"Testicular imaging."},
+    {c:"Ultrasound",n:"B Scan",p:3000,r:"Eye imaging."},
 
-    // PATHOLOGY
-    {c:"Pathology",t:"CBC",p:250,r:"Basic blood profile; anemia, infection"},
-    {c:"Pathology",t:"Blood Group",p:250,r:"ABO/Rh typing; surgery/donation"},
-    {c:"Pathology",t:"ESR",p:100,r:"Inflammation marker; TB, autoimmune"},
-    {c:"Pathology",t:"Sugar (Fasting)",p:100,r:"Diabetes screen (Empty stomach)"},
-    {c:"Pathology",t:"Sugar (PP)",p:100,r:"Diabetes screen (After food)"},
-    {c:"Pathology",t:"HbA1c",p:500,r:"3-month average sugar; Diabetes monitoring"},
-    {c:"Pathology",t:"Creatinine",p:200,r:"Kidney function; filtration marker"},
-    {c:"Pathology",t:"Urea",p:200,r:"Kidney waste product level"},
-    {c:"Pathology",t:"Uric Acid",p:200,r:"Gout, joint pain, kidney stones"},
-    {c:"Pathology",t:"Cholesterol",p:200,r:"Total fat in blood"},
-    {c:"Pathology",t:"Lipid Profile",p:800,r:"Detailed heart risk (HDL/LDL/Triglycerides)"},
-    {c:"Pathology",t:"SGOT",p:200,r:"Liver enzyme; general damage marker"},
-    {c:"Pathology",t:"SGPT",p:200,r:"Liver enzyme; specific for liver health"},
-    {c:"Pathology",t:"Bilirubin",p:200,r:"Jaundice check (Yellow eyes/skin)"},
-    {c:"Pathology",t:"LFT",p:800,r:"Complete Liver panel"},
-    {c:"Pathology",t:"T3 T4 TSH",p:600,r:"Complete Thyroid Profile"},
-    {c:"Pathology",t:"Free TFT",p:1000,r:"Active thyroid hormone level"},
-    {c:"Pathology",t:"Calcium",p:200,r:"Bone strength; deficiency causes pain"},
-    {c:"Pathology",t:"Vit D3",p:1200,r:"Bone health; sun vitamin deficiency"},
-    {c:"Pathology",t:"Vit B12",p:1000,r:"Nerve health; fatigue, tingling"},
-    {c:"Pathology",t:"Iron Studies",p:700,r:"Detailed anemia check"},
-    {c:"Pathology",t:"Ferritin",p:800,r:"Iron storage levels"},
-    {c:"Pathology",t:"Electrolytes",p:600,r:"Sodium/Potassium; hydration & heart"},
-    {c:"Pathology",t:"Amylase",p:500,r:"Pancreatitis check"},
-    {c:"Pathology",t:"Lipase",p:500,r:"Pancreatitis check (Specific)"},
-    {c:"Pathology",t:"Dengue NS1",p:600,r:"Early Dengue fever (Day 1-3)"},
-    {c:"Pathology",t:"Dengue IgG/IgM",p:1200,r:"Late Dengue fever/Recovery"},
-    {c:"Pathology",t:"Malaria MP",p:300,r:"Malaria check (Microscope)"},
-    {c:"Pathology",t:"Malaria Antigen",p:700,r:"Malaria check (Rapid Kit)"},
-    {c:"Pathology",t:"Widal",p:300,r:"Typhoid fever test"},
-    {c:"Pathology",t:"Urine R/M",p:300,r:"UTI, kidney infection check"},
-    {c:"Pathology",t:"Urine Culture",p:1800,r:"Bacteria identification for UTI antibiotics"},
-    {c:"Pathology",t:"Stool R/M",p:250,r:"Worms, parasites, digestion check"},
-    {c:"Pathology",t:"HIV",p:400,r:"AIDS virus screening"},
-    {c:"Pathology",t:"HBsAg",p:800,r:"Hepatitis B screening"},
-    {c:"Pathology",t:"HCV",p:1000,r:"Hepatitis C screening"},
-    {c:"Pathology",t:"VDRL",p:300,r:"Syphilis screening"},
-    {c:"Pathology",t:"Troponin I",p:1200,r:"Heart attack confirmation"},
-    {c:"Pathology",t:"Troponin T",p:1800,r:"Heart attack confirmation"},
-    {c:"Pathology",t:"B-HCG",p:600,r:"Pregnancy confirmation (Blood)"},
-    {c:"Pathology",t:"FSH",p:500,r:"Fertility hormone (Follicle Stimulating)"},
-    {c:"Pathology",t:"LH",p:500,r:"Fertility hormone (Luteinizing)"},
-    {c:"Pathology",t:"Prolactin",p:500,r:"Milk hormone; irregular periods"},
-    {c:"Pathology",t:"AMH",p:2200,r:"Ovarian reserve (Egg count)"},
-    {c:"Pathology",t:"Semen Analysis",p:500,r:"Male fertility; sperm count"},
-    {c:"Pathology",t:"Dual Marker",p:2800,r:"Down Syndrome risk (1st Trimester)"},
-    {c:"Pathology",t:"Quadruple Marker",p:3000,r:"Down Syndrome risk (2nd Trimester)"},
-    {c:"Pathology",t:"PT-INR",p:500,r:"Clotting time (Warfarin patients)"},
-    {c:"Pathology",t:"APTT",p:600,r:"Clotting time (Heparin patients)"},
-    {c:"Pathology",t:"RA Factor",p:500,r:"Rheumatoid Arthritis check"},
-    {c:"Pathology",t:"Anti CCP",p:1400,r:"Early Arthritis check (Specific)"},
-    {c:"Pathology",t:"Ana Profile",p:5500,r:"Autoimmune disease check (Lupus)"},
-    {c:"ECG",t:"Electrocardiography",p:500,r:"Records heart rhythm; for chest pain"}
+    // --- SPECIAL STUDIES & ECG ---
+    {c:"Special",n:"FNAC",p:4500,r:"Biopsy for lumps (breast/thyroid)."},
+    {c:"Special",n:"Electrocardiography (ECG)",p:500,r:"Heart rhythm; chest pain or routine check."},
+    {c:"Special",n:"Barium Swallow",p:2000,r:"Esophagus X-ray; difficulty swallowing."},
+    {c:"Special",n:"Barium Meal",p:3500,r:"Stomach/intestine; ulcers or pain."},
+    {c:"Special",n:"HSG",p:4500,r:"Infertility; checks if fallopian tubes are open."},
+
+    // --- PATHOLOGY (COMPLETE LIST) ---
+    {c:"Pathology",n:"APTT",p:600,r:"Clotting function."},
+    {c:"Pathology",n:"AMH",p:2200,r:"Ovarian reserve (fertility potential)."},
+    {c:"Pathology",n:"Ana Profile",p:5500,r:"Comprehensive Anemia workup."},
+    {c:"Pathology",n:"Amylase",p:500,r:"Pancreatitis diagnosis."},
+    {c:"Pathology",n:"ANC Profile",p:2500,r:"CBC, Sugar(F), HBSAG, TSH, Urine R, HCV, HIV, Blood group, VDRL."},
+    {c:"Pathology",n:"Anti CCP",p:1400,r:"Rheumatoid Arthritis screening."},
+    {c:"Pathology",n:"Alk. Phosphate",p:200,r:"Liver/Bone health marker."},
+    {c:"Pathology",n:"Blood Group",p:250,r:"Determines blood type (A/B/O, Rh)."},
+    {c:"Pathology",n:"BUN",p:200,r:"Blood Urea Nitrogen; kidney health."},
+    {c:"Pathology",n:"Bilirubin",p:200,r:"Jaundice/Liver function."},
+    {c:"Pathology",n:"B-HCG",p:600,r:"Pregnancy hormone confirmation."},
+    {c:"Pathology",n:"BT CT",p:300,r:"Bleeding and Clotting Time."},
+    {c:"Pathology",n:"CBC",p:250,r:"Anemia, infection, platelet count."},
+    {c:"Pathology",n:"Creatinine",p:200,r:"Kidney filtration capability."},
+    {c:"Pathology",n:"Calcium",p:200,r:"Bone health/deficiency."},
+    {c:"Pathology",n:"Cholesterol",p:200,r:"Heart disease risk assessment."},
+    {c:"Pathology",n:"CRP",p:500,r:"Inflammation marker."},
+    {c:"Pathology",n:"CPK Total",p:400,r:"Muscle damage marker."},
+    {c:"Pathology",n:"CPK MB",p:800,r:"Cardiac muscle marker."},
+    {c:"Pathology",n:"Chikungunya",p:1500,r:"Chikungunya virus test."},
+    {c:"Pathology",n:"Dengue NS1",p:600,r:"Early stage Dengue (Day 1-3)."},
+    {c:"Pathology",n:"Dengue IgG/IgM",p:1200,r:"Later stage Dengue check."},
+    {c:"Pathology",n:"Dual Marker",p:2800,r:"Down Syndrome screening (Fetal)."},
+    {c:"Pathology",n:"ESR",p:100,r:"Infection/TB marker."},
+    {c:"Pathology",n:"Electrolyte",p:600,r:"Na/K levels; hydration/heart."},
+    {c:"Pathology",n:"Ferritin",p:800,r:"Iron storage levels."},
+    {c:"Pathology",n:"Free TFT",p:1000,r:"Free T3, Free T4, TSH."},
+    {c:"Pathology",n:"Free PSA",p:1000,r:"Prostate health."},
+    {c:"Pathology",n:"G6PD",p:600,r:"Enzyme deficiency test."},
+    {c:"Pathology",n:"FSH",p:500,r:"Reproductive health/periods."},
+    {c:"Pathology",n:"HbA1c",p:500,r:"3-month average blood sugar."},
+    {c:"Pathology",n:"HIV",p:400,r:"HIV 1 & 2 screening."},
+    {c:"Pathology",n:"HCV",p:1000,r:"Hepatitis C screening."},
+    {c:"Pathology",n:"HBsAg",p:800,r:"Hepatitis B screening."},
+    {c:"Pathology",n:"Homocysteine",p:1200,r:"Heart/Artery health."},
+    {c:"Pathology",n:"Iron Studies",p:700,r:"Total iron and binding capacity."},
+    {c:"Pathology",n:"Insulin (F)",p:700,r:"Fasting insulin level."},
+    {c:"Pathology",n:"Insulin (PP)",p:700,r:"Post-meal insulin level."},
+    {c:"Pathology",n:"LFT",p:800,r:"Liver enzymes and bilirubin."},
+    {c:"Pathology",n:"Lipase",p:500,r:"Pancreas health."},
+    {c:"Pathology",n:"Lipid Profile",p:800,r:"Full cholesterol panel."},
+    {c:"Pathology",n:"LH",p:500,r:"Reproductive hormone."},
+    {c:"Pathology",n:"Malaria (MP)",p:300,r:"Malaria microscopy."},
+    {c:"Pathology",n:"Malaria Antigen",p:700,r:"Rapid malaria kit test."},
+    {c:"Pathology",n:"Montoux Test",p:500,r:"TB skin test."},
+    {c:"Pathology",n:"Magnesium",p:500,r:"Mineral level test."},
+    {c:"Pathology",n:"OGTT",p:400,r:"Glucose Tolerance Test."},
+    {c:"Pathology",n:"PT-INR",p:500,r:"Blood thinning monitoring."},
+    {c:"Pathology",n:"PSFOR MP",p:300,r:"Peripheral Smear for Malaria."},
+    {c:"Pathology",n:"Prolactin",p:500,r:"Reproductive health."},
+    {c:"Pathology",n:"Platelet Count",p:300,r:"Manual check for infection."},
+    {c:"Pathology",n:"Quadruple Marker",p:3000,r:"Maternal screening panel."},
+    {c:"Pathology",n:"RFT",p:1100,r:"Urea, Creatinine, Uric Acid."},
+    {c:"Pathology",n:"RA Factor",p:500,r:"Arthritis screening."},
+    {c:"Pathology",n:"RT-PCR",p:1000,r:"Molecular infection test."},
+    {c:"Pathology",n:"Sugar (F)",p:100,r:"Fasting Blood Glucose."},
+    {c:"Pathology",n:"Sugar (PP)",p:100,r:"Post-meal Blood Glucose."},
+    {c:"Pathology",n:"Sugar (R)",p:100,r:"Random Blood Glucose."},
+    {c:"Pathology",n:"SGOT",p:200,r:"Liver/Heart enzyme."},
+    {c:"Pathology",n:"SGPT",p:200,r:"Liver health enzyme."},
+    {c:"Pathology",n:"Stool R/M",p:250,r:"Parasites/Infection."},
+    {c:"Pathology",n:"Stool C/S",p:1600,r:"Stool Culture & Sensitivity."},
+    {c:"Pathology",n:"Semen Analysis",p:500,r:"Sperm count and motility."},
+    {c:"Pathology",n:"T3 T4 TSH",p:600,r:"Thyroid profile."},
+    {c:"Pathology",n:"Troponin I",p:1200,r:"Cardiac marker for Heart Attack."},
+    {c:"Pathology",n:"Troponin T",p:1800,r:"Cardiac marker for Heart Attack."},
+    {c:"Pathology",n:"Total Protein",p:200,r:"Protein levels (Alb/Glob)."},
+    {c:"Pathology",n:"Urine R/M",p:300,r:"UTI, sugar, or kidney issues."},
+    {c:"Pathology",n:"Urine C/S",p:1800,r:"Urine Culture & Sensitivity."},
+    {c:"Pathology",n:"Urea",p:200,r:"Kidney health."},
+    {c:"Pathology",n:"Uric Acid",p:200,r:"Gout or kidney stones."},
+    {c:"Pathology",n:"VDRL",p:300,r:"Syphilis screening."},
+    {c:"Pathology",n:"Vit D3",p:1200,r:"Bone health."},
+    {c:"Pathology",n:"Vit B12",p:1000,r:"Nerve health."},
+    {c:"Pathology",n:"Widal",p:300,r:"Typhoid fever test."}
 ];
 
-// --- PACKAGE SPECIAL QUESTIONS (EXPANDED) ---
-const pkgQuestions = [
-    {
-        q: "What is the <b>Offer Price</b> of the Full Body Checkup?",
-        a: "₹1500/-",
-        f: ["₹4000/-", "₹2500/-", "₹1200/-"]
-    },
-    {
-        q: "What is the <b>MRP</b> of the Full Body Checkup (without discount)?",
-        a: "₹4000/-",
-        f: ["₹1500/-", "₹3000/-", "₹5500/-"]
-    },
-    {
-        q: "Which <b>Vitamins</b> are included in the Full Body Checkup?",
-        a: "Vit B12 & Vit D3",
-        f: ["Vit C & Vit A", "Vit D3 only", "No Vitamins included"]
-    },
-    {
-        q: "Does the Full Body Checkup include <b>Ultrasound (USG)</b>?",
-        a: "No",
-        f: ["Yes, Whole Abdomen", "Yes, KUB only", "Yes, Pelvis only"]
-    },
-    {
-        q: "Which cardiac test is included in the Full Body Checkup?",
-        a: "ECG",
-        f: ["2D Echo", "Troponin I", "Stress Test"]
-    },
-    {
-        q: "Does the package include <b>HbA1c</b> (3-month sugar)?",
-        a: "Yes, Glycosylated Hb",
-        f: ["No, only Fasting Sugar", "No, only Urine Sugar", "No"]
-    },
-    {
-        q: "Which specific Kidney Function (KFT) tests are included?",
-        a: "Urea, Creatinine, BUN, Uric Acid",
-        f: ["Creatinine only", "Urea & Electrolytes only", "None"]
-    },
-    {
-        q: "Does the package include <b>Thyroid Profile</b>?",
-        a: "Only TSH (Thyroid)",
-        f: ["Yes, T3 T4 TSH", "No Thyroid tests", "Only T3 & T4"]
-    },
-    {
-        q: "Is <b>Calcium</b> included in the Full Body Checkup?",
-        a: "Yes",
-        f: ["No", "Only if requested", "Only with Vitamin D3"]
-    },
-    {
-        q: "Which Lipid Profile components are included?",
-        a: "Cholesterol, Triglycerides, HDL, LDL, VLDL",
-        f: ["Only Total Cholesterol", "Only HDL & LDL", "Cholesterol & Triglycerides only"]
-    },
-    {
-        q: "Is <b>Urine R/M</b> included in the package?",
-        a: "Yes",
-        f: ["No", "Only Urine Culture", "Only Urine Sugar"]
-    },
-    {
-        q: "Which Liver enzymes are tested in this package?",
-        a: "SGOT (AST) & SGPT (ALT)",
-        f: ["Only SGOT", "Only SGPT", "None"]
-    },
-    {
-        q: "Is <b>Total Protein & Albumin</b> included?",
-        a: "Yes, along with Globulin & A/G Ratio",
-        f: ["No", "Only Total Protein", "Only Albumin"]
-    },
-    {
-        q: "What is the full form of <b>LFT</b> mentioned in the package?",
-        a: "Liver Function Test",
-        f: ["Lung Function Test", "Lipid Function Test", "Liquid Filtration Test"]
-    },
-    {
-        q: "Does the package include <b>Risk Factors</b> analysis?",
-        a: "Yes",
-        f: ["No", "Only if requested", "Only for heart patients"]
-    },
-    {
-        q: "Is <b>BUN</b> (Blood Urea Nitrogen) included?",
-        a: "Yes",
-        f: ["No", "Only Urea", "Only Creatinine"]
-    },
-    {
-        q: "Is <b>BSF / PP (Sugar)</b> included?",
-        a: "Yes",
-        f: ["No, only Random Sugar", "No, only HbA1c", "No"]
-    },
-    {
-        q: "Does the package include <b>ESR</b>?",
-        a: "Yes",
-        f: ["No", "Only CBC", "Only Platelet Count"]
-    },
-    {
-        q: "Is <b>S. Bilirubin</b> (Total, Direct, Indirect) included?",
-        a: "Yes",
-        f: ["No", "Only Total Bilirubin", "Only Direct Bilirubin"]
-    },
-    {
-        q: "Does the package include <b>S. Alkaline Phosphatase</b>?",
-        a: "Yes",
-        f: ["No", "Only Acid Phosphatase", "Only if requested"]
-    }
-];
-
-// --- GAME LOGIC ---
-let state = { q:[], idx:0, score:0, mistakes:[] };
-let timer;
+let state={q:[],idx:0,score:0,mistakes:[]}, timer;
 
 function startQuiz() {
-    let cat = document.getElementById('cat-filter').value;
-    let limit = parseInt(document.getElementById('limit-filter').value);
-    
-    state.q = [];
-
-    // 1. Add Regular Database Questions
-    if (cat !== 'Packages') {
-        let pool = cat === 'All' ? db : db.filter(x => x.c === cat);
-        
-        pool.forEach(item => {
-            state.q.push({ 
-                type: 'price', 
-                txt: `What is the price of <br><span style='color:var(--primary)'>${item.t}</span>?`, 
-                ans: `₹${item.p}` 
-            });
-            
-            if(item.r) {
-                state.q.push({ 
-                    type: 'reason', 
-                    txt: `What is the significance of <br><span style='color:var(--primary)'>${item.t}</span>?`, 
-                    ans: item.r 
-                });
-                state.q.push({ 
-                    type: 'rev', 
-                    txt: `Which test is used for:<br><i>"${item.r.substring(0, 50)}..."</i>?`, 
-                    ans: item.t 
-                });
-            }
-        });
-    }
-
-    // 2. Add Package Questions
-    if (cat === 'All' || cat === 'Packages') {
-        pkgQuestions.forEach(pq => {
-            state.q.push({ type: 'pkg', txt: pq.q, ans: pq.a, f: pq.f });
-        });
-    }
-
-    if(!state.q.length) return alert("No questions found.");
-    
-    // Shuffle
-    state.q.sort(() => Math.random() - 0.5);
-    
-    // SLICE based on limit
-    if (limit < state.q.length) {
-        state.q = state.q.slice(0, limit);
-    }
-    
-    // Reset State
-    state.idx = 0; state.score = 0; state.mistakes = [];
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('end-screen').style.display = 'none';
-    document.getElementById('quiz-screen').style.display = 'flex';
-    document.getElementById('q-total').innerText = state.q.length;
-    
+    const cat=document.getElementById('cat-filter').value, lim=parseInt(document.getElementById('limit-filter').value);
+    state.q=[];
+    const pool = cat==='all'?database:database.filter(x=>x.c.includes(cat));
+    pool.forEach(i=>{
+        state.q.push({t:`What is the price of <b>${i.n}</b>?`, a:`₹${i.p}`, c:i.c, n:i.n});
+        if(i.r) state.q.push({t:`What is the significance of <b>${i.n}</b>?`, a:i.r, c:i.c, n:i.n});
+    });
+    state.q.sort(()=>Math.random()-0.5);
+    state.q=state.q.slice(0,lim);
+    state.idx=0; state.score=0; state.mistakes=[];
+    document.getElementById('start-screen').style.display='none';
+    document.getElementById('quiz-screen').style.display='flex';
+    document.getElementById('q-total').innerText=state.q.length;
     showQ();
 }
 
 function showQ() {
-    if(state.idx >= state.q.length) return end();
-    
-    let q = state.q[state.idx];
-    document.getElementById('q-num').innerText = state.idx + 1;
-    document.getElementById('question').innerHTML = q.txt;
-    document.getElementById('score').innerText = state.score;
-    document.getElementById('feedback').innerHTML = '';
-    document.getElementById('next-btn').style.display = 'none';
+    if(state.idx>=state.q.length) return end();
+    const q=state.q[state.idx];
+    document.getElementById('q-num').innerText=state.idx+1;
+    document.getElementById('q-cat').innerText=q.c;
+    document.getElementById('q-text').innerHTML=q.t;
+    document.getElementById('score').innerText=state.score;
+    document.getElementById('feedback').innerText='';
+    document.getElementById('next-btn').style.display='none';
 
-    // Options Logic
-    let opts = new Set();
-    opts.add(q.ans);
-
-    if (q.type === 'pkg') {
-        q.f.forEach(f => opts.add(f));
-    } else {
-        let max = 50;
-        while(opts.size < 4 && max > 0) {
-            let r = db[Math.floor(Math.random() * db.length)];
-            if(q.type === 'price') opts.add(`₹${r.p}`);
-            else if(q.type === 'reason') opts.add(r.r || "General checkup");
-            else opts.add(r.t);
-            max--;
-        }
-        if(opts.size < 4) {
-            if(q.type === 'price') opts.add("₹1500").add("₹5000");
-            else opts.add("Routine Check").add("Viral Infection");
-        }
+    const isPrice = q.t.includes('price'), opts = new Set([q.a]);
+    while(opts.size<4) {
+        const r = database[Math.floor(Math.random()*database.length)];
+        if(isPrice) opts.add(`₹${r.p}`); else opts.add(r.r);
     }
 
-    let box = document.getElementById('options');
-    box.innerHTML = '';
-    
-    Array.from(opts).sort(() => Math.random() - 0.5).forEach(o => {
-        let btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerHTML = o;
-        btn.onclick = () => check(btn, o, q);
-        box.appendChild(btn);
+    const box = document.getElementById('options'); box.innerHTML='';
+    Array.from(opts).sort(()=>Math.random()-0.5).forEach(o=>{
+        const btn=document.createElement('button'); btn.className='option-btn'; btn.innerText=o;
+        btn.onclick=()=>check(btn, o, q); box.appendChild(btn);
     });
-
     startTimer();
 }
 
 function startTimer() {
-    clearInterval(timer);
-    let t = 20;
-    let bar = document.getElementById('timer');
-    bar.style.width = '100%';
-    bar.style.backgroundColor = '#ffc107';
-
-    timer = setInterval(() => {
-        t--;
-        bar.style.width = (t/15*100) + '%';
-        if(t < 5) bar.style.backgroundColor = '#dc3545';
-        if(t <= 0) { clearInterval(timer); check(null, null, state.q[state.idx]); }
-    }, 1000);
+    clearInterval(timer); let t=15; const bar=document.getElementById('timer');
+    timer=setInterval(()=>{ t--; bar.style.width=(t/15*100)+'%'; if(t<=0){clearInterval(timer); check(null,null,state.q[state.idx]);} }, 1000);
 }
 
 function check(btn, sel, q) {
     clearInterval(timer);
-    document.querySelectorAll('.option-btn').forEach(b => {
-        b.disabled = true;
-        if(b.innerHTML === q.ans) b.classList.add('correct');
-    });
-
-    if(sel === q.ans) {
-        state.score++;
-        document.getElementById('feedback').innerHTML = '<span style="color:green">Correct!</span>';
-    } else {
-        if(btn) btn.classList.add('wrong');
-        document.getElementById('feedback').innerHTML = '<span style="color:red">Wrong!</span>';
-        let txt = q.txt.replace(/<[^>]*>/g, '');
-        state.mistakes.push(`<b>Q:</b> ${txt}<br><b>Ans:</b> ${q.ans}`);
-    }
-    document.getElementById('next-btn').style.display = 'block';
+    document.querySelectorAll('.option-btn').forEach(b=>{b.disabled=true; if(b.innerText===q.a)b.classList.add('correct');});
+    if(sel===q.a){state.score++; document.getElementById('feedback').innerHTML='<span style="color:var(--success)">✓ CORRECT</span>';}
+    else{if(btn)btn.classList.add('wrong'); document.getElementById('feedback').innerHTML='<span style="color:var(--danger)">✗ INCORRECT</span>'; state.mistakes.push(`<b>${q.n}</b><br>Correct Answer: ${q.a}`);}
+    document.getElementById('next-btn').style.display='block';
 }
 
-function nextQuestion() { state.idx++; showQ(); }
+function nextQuestion(){state.idx++; showQ();}
 
 function end() {
-    document.getElementById('quiz-screen').style.display = 'none';
-    document.getElementById('end-screen').style.display = 'flex';
-    document.getElementById('final-score').innerText = `${state.score} / ${state.q.length}`;
-    
-    let mBox = document.getElementById('mistakes');
-    if(state.mistakes.length) {
-        mBox.style.display = 'block';
-        mBox.innerHTML = '<h3>Review Mistakes:</h3>' + state.mistakes.map(m => `<div style="border-bottom:1px solid #ddd; padding:10px 0;">${m}</div>`).join('');
-    } else {
-        mBox.style.display = 'none';
-    }
+    document.getElementById('quiz-screen').style.display='none';
+    document.getElementById('end-screen').style.display='flex';
+    document.getElementById('final-score').innerText=Math.round((state.score/state.q.length)*100)+"%";
+    const mBox=document.getElementById('mistakes');
+    mBox.innerHTML = state.mistakes.length? '<h3>Review Items:</h3>'+state.mistakes.map(m=>`<div style="border-bottom:1px solid #e2e8f0; padding:10px 0;">${m}</div>`).join('') : '<div style="text-align:center; padding:20px;"><b>Mastery Achieved!</b></div>';
 }
 </script>
 </body>
